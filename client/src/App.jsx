@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Register from "./pages/Register";
 import Header from "./components/Header";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
       <main className="min-h-[52vh]">
         <Outlet />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

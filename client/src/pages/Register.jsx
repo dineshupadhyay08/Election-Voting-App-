@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Calendar, ChevronDown, Scan } from "lucide-react";
 
 const Register = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
+    name: "",
+    dob: "",
+    idType: "",
+    idNumber: "",
+    phone: "",
     password: "",
     password2: "",
   });
 
   const [error, setError] = useState("");
 
-  // Input change handler
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -22,129 +25,132 @@ const Register = () => {
     }));
   };
 
-  // Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Password match check
     if (formData.password !== formData.password2) {
-      setError("Password और Confirm Password match नहीं कर रहे।");
+      setError("Password match नहीं कर रहा");
       return;
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/voters/register`,
-        {
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-          password2: formData.password2,
-          mobileNumber: formData.mobileNumber, // mobile number add करना जरूरी है
-        }
+        formData
       );
-
-      console.log("✅ Registration success:", res.data);
       navigate("/login");
     } catch (err) {
-      console.log("❌ Register error:", err);
-      setError(
-        err.response?.data?.message || "Registration failed. Try again."
-      );
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-white to-orange-100 px-4">
-      <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 border border-gray-200">
-        <h2 className="text-2xl font-bold text-center text-green-700 mb-6">
-          ग्राम पंचायत मतदाता पंजीकरण 🗳️
-        </h2>
+    <div className="min-h-screen flex items-start justify-center bg-white px-4 pt-12 pb-12">
+      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-6 py-10 mt-6">
+        {/* TITLE */}
+        <div className="flex flex-col items-center mt-6 mb-8">
+          <img
+            src="/Register_vote_img.jpg"
+            alt="Voting Logo"
+            className="w-20 h-20 mb-4"
+          />
+
+          <h2 className="text-xl font-semibold">Register Now!</h2>
+        </div>
 
         {error && (
-          <p className="text-red-600 bg-red-50 border border-red-300 rounded-md text-center py-2 mb-4">
-            {error}
-          </p>
+          <p className="text-red-600 text-sm text-center mb-3">{error}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <input
             type="text"
-            name="fullName"
-            placeholder="पूरा नाम (Full Name)"
-            value={formData.fullName}
+            name="name"
+            placeholder="Name"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
+            className="input-ui"
             required
           />
 
+          {/* DOB */}
+          <div className="relative">
+            <input
+              type="date"
+              name="dob"
+              onChange={handleChange}
+              className="input-ui pr-10"
+              required
+            />
+            <Calendar className="icon-ui" />
+          </div>
+
+          {/* Select ID */}
+          <div className="relative">
+            <select
+              name="idType"
+              onChange={handleChange}
+              className="input-ui appearance-none"
+              required
+            >
+              <option value="">Select the ID</option>
+              <option value="aadhaar">Aadhaar</option>
+              <option value="voter">Voter ID</option>
+              <option value="pan">PAN</option>
+            </select>
+            <ChevronDown className="icon-ui" />
+          </div>
+
+          {/* ID Number */}
           <input
             type="text"
-            name="mobileNumber"
-            placeholder="मोबाइल नंबर (Mobile Number)"
+            name="idNumber"
+            placeholder="ID No"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
+            className="input-ui"
             required
           />
 
+          {/* Phone */}
           <input
-            type="email"
-            name="email"
-            placeholder="ईमेल पता (Email Address)"
-            value={formData.email}
+            type="text"
+            name="phone"
+            placeholder="Phone No"
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
+            className="input-ui"
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="पासवर्ड (Password)"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
-            required
-          />
+          <p className="text-xs text-gray-500">
+            Note: Please provide the phone number linked to your Aadhaar ID*
+          </p>
 
-          <input
-            type="password"
-            name="password2"
-            placeholder="पासवर्ड की पुष्टि करें (Confirm Password)"
-            value={formData.password2}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
-            required
-          />
+          {/* Scan ID */}
+          <button
+            type="button"
+            disabled
+            className="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-500 py-3 rounded-xl cursor-not-allowed"
+          >
+            Scan the ID <Scan size={18} />
+          </button>
 
+          {/* Verify */}
           <button
             type="submit"
-            className="w-full bg-green-700 text-white font-semibold py-2 rounded-lg hover:bg-green-800 transition"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
           >
-            Register Now
+            Verify
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-700">
-          <p>
-            पहले से खाता है?{" "}
-            <Link
-              to="/login"
-              className="text-green-700 font-semibold hover:underline"
-            >
-              लॉगिन करें
-            </Link>
-          </p>
-          <p className="mt-2">
-            <Link
-              to="/forgot-password"
-              className="text-blue-600 hover:underline"
-            >
-              पासवर्ड भूल गए?
-            </Link>
-          </p>
-        </div>
+        {/* Footer */}
+        <p className="text-center text-sm mt-6">
+          Already Registered?{" "}
+          <Link to="/login" className="text-indigo-600 font-semibold">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

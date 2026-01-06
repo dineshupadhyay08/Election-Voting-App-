@@ -21,7 +21,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-green-600 via-white to-orange-500 shadow-lg">
+    <header className="hidden bg-gradient-to-r from-green-600 via-white to-orange-500 shadow-lg">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo + Title */}
         <Link className="flex items-center space-x-3">
