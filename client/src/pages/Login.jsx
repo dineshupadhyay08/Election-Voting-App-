@@ -1,34 +1,69 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // API call here
-    navigate("/");
+    setError("");
+
+    try {
+      setLoading(true);
+
+      // 🔥 LOGIN (COOKIE BASED)
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/voters/login`,
+        form,
+        {
+          withCredentials: true, // ✅ VERY IMPORTANT
+        }
+      );
+
+      // optional data (token cookie me hai)
+      localStorage.setItem("userId", res.data.id);
+      localStorage.setItem("isAdmin", res.data.isAdmin);
+
+      // redirect
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FB] flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">
-          Welcome Back
-        </h2>
-        <p className="text-sm text-gray-500 text-center mt-1">
-          Login to continue voting
-        </p>
+    <div className="min-h-screen flex items-start justify-center bg-white px-4 pt-12 pb-12">
+      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-6 py-10 mt-6">
+        <div className="flex flex-col items-center mt-6 mb-8">
+          <img
+            src="/Register_vote_img.jpg"
+            alt="Voting Logo"
+            className="w-20 h-20 rounded-full object-cover shadow-lg mb-4"
+          />
+          <h2 className="text-xl font-semibold">Welcome Back</h2>
+          <p className="text-sm text-gray-500 mt-1">Login to continue voting</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        {error && (
+          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             name="email"
@@ -36,7 +71,7 @@ const Login = () => {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="input-ui"
           />
 
           <input
@@ -46,23 +81,31 @@ const Login = () => {
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="input-ui"
           />
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 transition"
+            disabled={loading}
+            className={`w-full text-white font-semibold py-3 rounded-xl transition
+              ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-sm text-gray-500 text-center mt-6">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-green-600 font-medium">
-            Register
-          </Link>
-        </p>
+        <div className="text-center mt-8 text-sm">
+          <p>
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-indigo-600 font-semibold">
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

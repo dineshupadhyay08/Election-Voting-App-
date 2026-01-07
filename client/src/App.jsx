@@ -1,22 +1,26 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+import PublicLayout from "./components/PublicLayout";
+import AuthLayout from "./components/AuthLayout";
+
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Header from "./components/Header";
-// import Footer from "./components/Footer";
 
 function App() {
   return (
-    <>
-      <Header />
-      <main className="min-h-[52vh]">
-        <Outlet />
-      </main>
-      {/* <Footer /> */}
-    </>
+    <Routes>
+      {/* 🌐 Home → Footer visible */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+      </Route>
+
+      {/* 🔐 Auth → Footer hidden */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+    </Routes>
   );
 }
 

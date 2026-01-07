@@ -1,9 +1,8 @@
-const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const VoterModel = require("../model/voterModel.js") 
-const HttpError = require("../middleware/HttpError.js") 
-
+const VoterModel = require("../model/voterModel.js");
+const HttpError = require("../middleware/HttpError.js");
 
 //*******REGISTER NEW VOTER********* */
 
@@ -22,7 +21,9 @@ const registerVoterController = async (req, res, next) => {
     }
 
     if (password.trim().length < 6) {
-      return next(new HttpError("Password must be at least 6 characters.", 422));
+      return next(
+        new HttpError("Password must be at least 6 characters.", 422)
+      );
     }
 
     if (password !== password2) {
@@ -41,8 +42,8 @@ const registerVoterController = async (req, res, next) => {
       fullName,
       email: newEmail,
       password: hashedPassword,
-      mobile_number : mobileNumber,
-      isAdmin
+      mobile_number: mobileNumber,
+      isAdmin,
     });
 
     res.status(201).json(`New Voter ${fullName} created.`);
@@ -52,19 +53,16 @@ const registerVoterController = async (req, res, next) => {
   }
 };
 
-
-
-const generateToken = (payload) =>{
-    const token = jwt.sign(payload,process.env.JWT_SRCRET,{expiresIn: "1d"})
-    return token;
-}
+const generateToken = (payload) => {
+  const token = jwt.sign(payload, process.env.JWT_SRCRET, { expiresIn: "1d" });
+  return token;
+};
 
 //******* LOGIN VOTER *********//
 const loginVoterController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Check if email and password provided
     if (!email || !password) {
       return next(new HttpError("Please provide email and password.", 422));
     }
@@ -74,18 +72,27 @@ const loginVoterController = async (req, res, next) => {
       return next(new HttpError("Invalid credentials.", 401));
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, voter.password);
     if (!isMatch) {
       return next(new HttpError("Invalid credentials.", 401));
     }
 
-    const {_id : id, isAdmin, votedElections} = voter;
-    const token = generateToken({id, isAdmin})
+    const { _id: id, isAdmin, votedElections } = voter;
+    const token = generateToken({ id, isAdmin });
 
-    res.json({token, id, votedElections, isAdmin})
-    
-
+    // ✅ SET COOKIE HERE
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: false, // production me true
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
+      .json({
+        id,
+        votedElections,
+        isAdmin,
+      });
   } catch (err) {
     console.log("Login error:", err);
     return next(new HttpError("Login failed. Try again later.", 500));
@@ -94,22 +101,47 @@ const loginVoterController = async (req, res, next) => {
 
 module.exports = { loginVoterController };
 
+//******* GET VOTER PROFILE *********//
 
 const getVoterController = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        const voter = await VoterModel.findById(id).select("-password")
-        res.json(voter)
-        // console.log("Voter",voter)
-    } catch (error) {
-        return next(HttpError("Couldn't get voter",404))
-        
+  try {
+    console.log("REQ.USER:", req.user);
+
+    if (!req.user || !req.user.id) {
+      return next(new HttpError("User not authenticated", 401));
     }
-}
+
+    const voter = await VoterModel.findById(req.user.id).select("-password");
+
+    if (!voter) {
+      return next(new HttpError("Voter not found", 404));
+    }
+
+    res.status(200).json(voter);
+  } catch (error) {
+    console.log("GET VOTER ERROR:", error);
+    return next(new HttpError("Couldn't get voter profile", 500));
+  }
+};
+
+const getMyProfileController = async (req, res, next) => {
+  try {
+    const voter = await VoterModel.findById(req.user.id).select("-password");
+
+    if (!voter) {
+      return next(new HttpError("Voter not found", 404));
+    }
+
+    res.json(voter);
+  } catch (error) {
+    return next(new HttpError("Profile fetch failed", 500));
+  }
+};
 
 // ✅ Export all controllers
 module.exports = {
-    registerVoterController,
-    loginVoterController,
-    getVoterController,
+  registerVoterController,
+  loginVoterController,
+  getVoterController,
+  getMyProfileController,
 };
