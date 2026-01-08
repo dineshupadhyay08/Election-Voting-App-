@@ -1,21 +1,21 @@
 const HttpError = require("./HttpError");
+const VoterModel = require("../model/voterModel");
 
-const adminMiddleware = (req, res, next) => {
+const adminMiddleware = async (req, res, next) => {
   try {
-    // 🔒 authMiddleware ke baad hi chalega
-    // req.user = { id, isAdmin }
-
-    if (!req.user) {
+    if (!req.user || !req.user.id) {
       return next(new HttpError("Not authenticated", 401));
     }
 
-    if (!req.user.isAdmin) {
+    const voter = await VoterModel.findById(req.user.id);
+
+    if (!voter || voter.isAdmin !== true) {
       return next(new HttpError("Admin access only", 403));
     }
 
-    // ✅ Admin verified
+    // ✅ trusted admin
     next();
-  } catch (error) {
+  } catch (err) {
     return next(new HttpError("Admin authorization failed", 500));
   }
 };

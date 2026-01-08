@@ -1,27 +1,40 @@
 const jwt = require("jsonwebtoken");
+const HttpError = require("./HttpError");
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  // ❌ Token hi nahi
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({
-      message: "Authentication required. No token provided.",
-    });
-  }
-
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SRCRET);
+    let token;
 
-    // ✅ token valid
-    req.user = decoded; // { id, isAdmin }
+    // 1️⃣ Cookie se
+    if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    // 2️⃣ Header se (fallback)
+    if (
+      !token &&
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer ")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token) {
+      return next(
+        new HttpError("Authentication required. No token provided.", 401)
+      );
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SRCRET);
+    // console.log("JWT DECODED:", decoded);
+    req.user = decoded;
+
     next();
-  } catch (error) {
-    return res.status(401).json({
-      message: "Invalid or expired token.",
-    });
+    // console.log("Cookies received:", req.cookies);
+    // console.log("AUTH USER:", req.user);
+    // console.log("COOKIES:", req.cookies);
+  } catch (err) {
+    return next(new HttpError("Authentication failed.", 401));
   }
 };
 

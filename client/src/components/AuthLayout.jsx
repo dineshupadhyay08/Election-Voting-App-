@@ -4,7 +4,7 @@ import Header from "./Header";
 const AuthLayout = () => {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main className="min-h-screen">
         <Outlet />
       </main>

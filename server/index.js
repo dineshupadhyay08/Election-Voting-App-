@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:5173", // frontend URL
-    credentials: true, // अगर cookies/token भेजने हो
+    credentials: true,
   })
 );
 app.use(express.urlencoded({ extended: true }));

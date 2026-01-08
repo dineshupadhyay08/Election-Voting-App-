@@ -1,5 +1,8 @@
 const { Router } = require("express");
 
+/* =========================
+   CONTROLLERS
+========================= */
 const {
   registerVoterController,
   loginVoterController,
@@ -11,9 +14,9 @@ const {
   addElection,
   getElectionVoters,
   getElections,
+  updateElection,
   removeElection,
   getCandidatesOfElection,
-  updateElection,
 } = require("../controller/electionController");
 
 const {
@@ -21,43 +24,59 @@ const {
   getCandidate,
   removeCandidate,
   voteCandidates,
+  getAllCandidates,
+  updateCandidate,
 } = require("../controller/candidatesController");
 
+/* =========================
+   MIDDLEWARE
+========================= */
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
 const router = Router();
 
-/* =========================
-   AUTH (PUBLIC)
-========================= */
+/* ======================================================
+   AUTH ROUTES (PUBLIC)
+====================================================== */
 router.post("/voters/register", registerVoterController);
 router.post("/voters/login", loginVoterController);
 
-/* =========================
-   VOTER (PROTECTED)
-========================= */
+/* ======================================================
+   VOTER ROUTES (PROTECTED)
+====================================================== */
 router.get("/voters/me", authMiddleware, getMyProfileController);
 router.get("/voters/:id", authMiddleware, getVoterController);
 
-/* =========================
-   ELECTIONS
-========================= */
+/* ======================================================
+   ELECTION ROUTES
+====================================================== */
 
-// 🔐 Users – view elections
+/* 🔐 USERS – VIEW ELECTIONS (FILTERS SUPPORTED)
+   Example:
+   /elections?status=LIVE
+   /elections?category=PANCHAYAT
+   /elections?sort=ENDING_SOON
+*/
 router.get("/elections", authMiddleware, getElectionVoters);
+
+/* 🔐 USER – SINGLE ELECTION */
 router.get("/elections/:id", authMiddleware, getElections);
+
+/* 🔐 USER – CANDIDATES OF ELECTION */
 router.get(
   "/elections/:id/candidates",
   authMiddleware,
   getCandidatesOfElection
 );
 
-// 👑 Admin – manage elections
-router.post("/elections", adminMiddleware, authMiddleware, addElection);
+/* 👑 ADMIN – CREATE ELECTION */
+router.post("/elections", authMiddleware, adminMiddleware, addElection);
 
-router.patch("/elections/:id", adminMiddleware, authMiddleware, updateElection);
+/* 👑 ADMIN – UPDATE ELECTION */
+router.patch("/elections/:id", authMiddleware, adminMiddleware, updateElection);
 
+/* 👑 ADMIN – DELETE ELECTION */
 router.delete(
   "/elections/:id",
   authMiddleware,
@@ -65,13 +84,16 @@ router.delete(
   removeElection
 );
 
-/* =========================
-   CANDIDATES
-========================= */
+/* ======================================================
+   CANDIDATE ROUTES
+====================================================== */
 
-// 👑 Admin – add/remove candidate
-router.post("/candidates", adminMiddleware, authMiddleware, addCandidate);
+router.get("/candidates", authMiddleware, getAllCandidates);
 
+/* 👑 ADMIN – ADD CANDIDATE */
+router.post("/candidates", authMiddleware, adminMiddleware, addCandidate);
+
+/* 👑 ADMIN – REMOVE CANDIDATE */
 router.delete(
   "/candidates/:id",
   authMiddleware,
@@ -79,8 +101,17 @@ router.delete(
   removeCandidate
 );
 
-// 🔐 User – view & vote
+router.patch(
+  "/candidates/:id",
+  authMiddleware,
+  adminMiddleware,
+  updateCandidate
+);
+
+/* 🔐 USER – VIEW CANDIDATE */
 router.get("/candidates/:id", authMiddleware, getCandidate);
-router.patch("/candidates/:id", authMiddleware, voteCandidates);
+
+/* 🔐 USER – VOTE */
+router.patch("/candidates/:id/vote", authMiddleware, voteCandidates);
 
 module.exports = router;

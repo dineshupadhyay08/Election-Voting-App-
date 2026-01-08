@@ -10,6 +10,8 @@ import Register from "../pages/Register";
 import Elections from "../pages/Elections";
 import PollHistory from "../pages/PollHistory";
 import Profile from "../pages/Profile";
+import Candidates from "../pages/Candidates";
+import CandidateDetails from "../pages/CandidatesDetails";
 
 const router = createBrowserRouter([
   // 🔐 PROTECTED PAGES
@@ -20,7 +22,10 @@ const router = createBrowserRouter([
         element: <PublicLayout />,
         children: [
           { path: "/", element: <Home /> },
+
           { path: "/elections", element: <Elections /> },
+          { path: "/candidates", element: <Candidates /> },
+          { path: "/candidates/:id", element: <CandidateDetails /> },
           { path: "/poll-history", element: <PollHistory /> },
           { path: "/profile", element: <Profile /> },
         ],

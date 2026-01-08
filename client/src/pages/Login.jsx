@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../store/axios"; // ✅ axios instance
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,20 +24,14 @@ const Login = () => {
     try {
       setLoading(true);
 
-      // 🔥 LOGIN (COOKIE BASED)
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/voters/login`,
-        form,
-        {
-          withCredentials: true, // ✅ VERY IMPORTANT
-        }
-      );
+      // 🔥 LOGIN (COOKIE BASED, via axios instance)
+      const res = await api.post("/voters/login", form);
 
-      // optional data (token cookie me hai)
+      // optional frontend data
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("isAdmin", res.data.isAdmin);
 
-      // redirect
+      // redirect to home
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

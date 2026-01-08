@@ -34,6 +34,10 @@ const Sidebar = () => {
           <Vote size={18} /> Elections
         </NavLink>
 
+        <NavLink to="/candidates" className={linkClass}>
+          <Vote size={18} /> Candidates
+        </NavLink>
+
         <NavLink to="/poll-history" className={linkClass}>
           <History size={18} /> Poll History
         </NavLink>

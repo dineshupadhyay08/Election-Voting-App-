@@ -84,15 +84,16 @@ const loginVoterController = async (req, res, next) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false, // production me true
         sameSite: "lax",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        secure: false, // localhost
+        maxAge: 24 * 60 * 60 * 1000,
       })
       .json({
         id,
-        votedElections,
         isAdmin,
+        votedElections,
       });
+    console.log("LOGIN BODY:", req.body);
   } catch (err) {
     console.log("Login error:", err);
     return next(new HttpError("Login failed. Try again later.", 500));
