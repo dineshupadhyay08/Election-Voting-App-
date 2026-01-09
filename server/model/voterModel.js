@@ -4,30 +4,51 @@ const voterSchema = new Schema(
   {
     fullName: {
       type: String,
-      require: true,
+      required: true,
     },
+
+    profileImage: {
+      type: String,
+      default: "",
+    },
+
+    gender: {
+      type: String,
+      enum: ["MALE", "FEMALE", "OTHER"],
+    },
+
+    dateOfBirth: {
+      type: Date,
+    },
+
     mobile_number: {
       type: Number,
-      require: true,
+      required: true,
     },
+
     email: {
       type: String,
-      require: true,
+      required: true,
     },
-    password: {
-      type: String,
-      require: true,
+
+    address: {
+      village: String,
+      gramPanchayat: String,
+      district: String,
+      state: String,
+      pincode: String,
     },
+
     votedElections: [
       {
         type: Types.ObjectId,
         ref: "Election",
-        required: true,
       },
     ],
+
     isAdmin: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { timestamps: true }
