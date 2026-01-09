@@ -13,7 +13,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   return (
-    <aside className="h-screen w-56 bg-white border-r border-gray-200 sticky top-0">
+    // 👇 hide sidebar on mobile
+    <aside className="hidden md:block h-screen w-56 bg-white border-r border-gray-200 sticky top-0">
       {/* Logo */}
       <div className="flex items-center justify-center px-2 py-2 border-b border-gray-200 cursor-pointer">
         <img

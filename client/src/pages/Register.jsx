@@ -34,12 +34,10 @@ const Register = () => {
 
     try {
       setLoading(true);
-
       await axios.post(
         `${import.meta.env.VITE_API_URL}/voters/register`,
         formData
       );
-
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -49,16 +47,16 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-white px-4 pt-12 pb-12">
-      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-6 py-10 mt-6">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
+      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-5 sm:px-6 py-8 sm:py-10">
         {/* Header */}
-        <div className="flex flex-col items-center mt-6 mb-8">
+        <div className="flex flex-col items-center mb-6 sm:mb-8">
           <img
             src="/Register_vote_img.jpg"
             alt="Voting Logo"
-            className="w-20 h-20 rounded-full object-cover shadow-lg mb-4"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg mb-3 sm:mb-4"
           />
-          <h2 className="text-xl font-semibold">Register Now!</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">Register Now!</h2>
         </div>
 
         {error && (
@@ -66,7 +64,6 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Full Name */}
           <input
             type="text"
             name="fullName"
@@ -77,7 +74,6 @@ const Register = () => {
             required
           />
 
-          {/* Email */}
           <input
             type="email"
             name="email"
@@ -88,7 +84,6 @@ const Register = () => {
             required
           />
 
-          {/* Mobile Number */}
           <input
             type="text"
             name="mobileNumber"
@@ -99,7 +94,6 @@ const Register = () => {
             required
           />
 
-          {/* Password */}
           <input
             type="password"
             name="password"
@@ -110,7 +104,6 @@ const Register = () => {
             required
           />
 
-          {/* Confirm Password */}
           <input
             type="password"
             name="password2"
@@ -121,22 +114,19 @@ const Register = () => {
             required
           />
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition 
-              ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700"
-              }`}
+            className={`w-full py-3 rounded-xl font-semibold text-white transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Footer */}
         <p className="text-center text-sm mt-6">
           Already Registered?{" "}
           <Link to="/login" className="text-indigo-600 font-semibold">

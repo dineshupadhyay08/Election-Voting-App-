@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../store/axios"; // ✅ axios instance
+import api from "../store/axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,15 +23,11 @@ const Login = () => {
 
     try {
       setLoading(true);
-
-      // 🔥 LOGIN (COOKIE BASED, via axios instance)
       const res = await api.post("/voters/login", form);
 
-      // optional frontend data
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("isAdmin", res.data.isAdmin);
 
-      // redirect to home
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
@@ -41,16 +37,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-white px-4 pt-12 pb-12">
-      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-6 py-10 mt-6">
-        <div className="flex flex-col items-center mt-6 mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
+      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-5 sm:px-6 py-8 sm:py-10">
+        <div className="flex flex-col items-center mb-6 sm:mb-8">
           <img
             src="/Register_vote_img.jpg"
             alt="Voting Logo"
-            className="w-20 h-20 rounded-full object-cover shadow-lg mb-4"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg mb-3 sm:mb-4"
           />
-          <h2 className="text-xl font-semibold">Welcome Back</h2>
-          <p className="text-sm text-gray-500 mt-1">Login to continue voting</p>
+          <h2 className="text-lg sm:text-xl font-semibold">Welcome Back</h2>
+          <p className="text-sm text-gray-500 mt-1 text-center">
+            Login to continue voting
+          </p>
         </div>
 
         {error && (
@@ -81,18 +79,17 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-semibold py-3 rounded-xl transition
-              ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700"
-              }`}
+            className={`w-full py-3 rounded-xl font-semibold text-white transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className="text-center mt-8 text-sm">
+        <div className="text-center mt-6 sm:mt-8 text-sm">
           <p>
             Don’t have an account?{" "}
             <Link to="/register" className="text-indigo-600 font-semibold">

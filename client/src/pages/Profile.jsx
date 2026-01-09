@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../store/axios"; // same axios instance withCredentials:true
 import { Navigate } from "react-router-dom";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const token = localStorage.getItem("token");
+  const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/voters/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    api
+      .get("/voters/me") // 🔥 no token header needed
       .then((res) => setUser(res.data))
-      .catch((err) => console.log(err));
+      .catch(() => setUnauthorized(true));
   }, []);
 
-  if (!token) return <Navigate to="/login" />;
+  if (unauthorized) return <Navigate to="/login" />;
 
   if (!user) return <div>Loading profile...</div>;
 

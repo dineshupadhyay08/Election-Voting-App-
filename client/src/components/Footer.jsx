@@ -2,7 +2,8 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-8 mt-12">
+    // 👇 hide footer on mobile (bottom nav already exists)
+    <footer className="hidden md:block bg-gray-900 text-gray-300 py-8 mt-12">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* About Section */}
         <div>

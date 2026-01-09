@@ -15,18 +15,15 @@ const Elections = () => {
   const [status, setStatus] = useState("ALL");
   const [sort, setSort] = useState("");
 
-  // 🔐 check admin
   useEffect(() => {
     api
       .get("/voters/me")
       .then((res) => setIsAdmin(res.data.isAdmin))
-      .catch(() => setIsAdmin(false));
+      .catch(() => {});
   }, []);
 
-  // 🔹 fetch elections
   const fetchElections = async () => {
     const params = {};
-
     if (category) params.category = category;
     if (status !== "ALL") params.status = status;
     if (sort) params.sort = sort;
@@ -38,7 +35,6 @@ const Elections = () => {
   useEffect(() => {
     fetchElections();
   }, []);
-
   useEffect(() => {
     fetchElections();
   }, [category, status, sort]);
@@ -48,22 +44,18 @@ const Elections = () => {
 
   return (
     <div className="space-y-6">
-      {/* ================= HEADER / FILTER ================= */}
-      <div className="bg-white rounded-2xl px-6 py-4 shadow-sm ">
-        {/* TOP ROW */}
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-semibold text-gray-800">Elections</h1>
+      {/* HEADER */}
+      <div className="bg-white rounded-2xl px-4 sm:px-6 py-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+          <h1 className="text-xl font-semibold">Elections</h1>
 
-          <button className="flex items-center gap-2 border rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-            Filters
-            <span className="text-xs">▾</span>
+          <button className="border rounded-lg px-4 py-2 text-sm text-gray-600">
+            Filters ▾
           </button>
         </div>
 
-        {/* BOTTOM ROW */}
-        <div className="flex justify-between items-center">
-          {/* LEFT FILTERS */}
-          <div className="flex gap-3 items-center">
+        <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
+          <div className="flex flex-wrap gap-3">
             <select
               className="border rounded-lg px-4 py-2 text-sm"
               value={category}
@@ -76,7 +68,7 @@ const Elections = () => {
               <option value="LOK_SABHA">Lok Sabha</option>
             </select>
 
-            <select className="border rounded-lg px-4 py-2 text-sm text-gray-700 bg-white focus:outline-none">
+            <select className="border rounded-lg px-4 py-2 text-sm">
               <option>Any Date</option>
             </select>
 
@@ -90,57 +82,36 @@ const Elections = () => {
             </select>
           </div>
 
-          {/* RIGHT TABS */}
-          <div className="flex items-center gap-6 text-sm font-medium">
-            <button
-              onClick={() => setStatus("ALL")}
-              className={status === "ALL" ? "text-indigo-600" : "text-gray-500"}
-            >
-              All
-            </button>
-
-            <button
-              onClick={() => setStatus("LIVE")}
-              className={
-                status === "LIVE" ? "text-indigo-600" : "text-gray-500"
-              }
-            >
-              Live
-              <span className="ml-1 bg-indigo-100 text-indigo-600 text-xs px-2 rounded-full">
-                {elections.filter((e) => e.status === "LIVE").length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setStatus("UPCOMING")}
-              className={
-                status === "UPCOMING" ? "text-indigo-600" : "text-gray-500"
-              }
-            >
-              Upcoming
-            </button>
+          <div className="flex gap-6 text-sm font-medium">
+            {["ALL", "LIVE", "UPCOMING"].map((s) => (
+              <button
+                key={s}
+                onClick={() => setStatus(s)}
+                className={status === s ? "text-indigo-600" : "text-gray-500"}
+              >
+                {s}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* ================= CONTENT ================= */}
-      <div className="grid grid-cols-[1fr_320px] gap-6">
-        {/* LEFT SIDE */}
+      {/* CONTENT */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-8">
-          {/* Ongoing */}
           <div>
             <h2 className="font-semibold text-lg mb-4">
               Ongoing Elections ({ongoing.length})
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {ongoing.map((election) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {ongoing.map((e) => (
                 <ElectionCard
-                  key={election._id}
-                  election={election}
+                  key={e._id}
+                  election={e}
                   isAdmin={isAdmin}
                   onEdit={() => {
-                    setEditElection(election);
+                    setEditElection(e);
                     setShowModal(true);
                   }}
                 />
@@ -148,23 +119,21 @@ const Elections = () => {
             </div>
           </div>
 
-          {/* Upcoming */}
           <div>
             <h2 className="font-semibold text-lg mb-4">Upcoming Elections</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {upcoming.map((election) => (
-                <UpcomingElectionCard key={election._id} election={election} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {upcoming.map((e) => (
+                <UpcomingElectionCard key={e._id} election={e} />
               ))}
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <ElectionInsights />
+        <div className="order-last lg:order-none">
+          <ElectionInsights />
+        </div>
       </div>
 
-      {/* ================= MODAL ================= */}
       {showModal && (
         <ElectionFormModal
           election={editElection}

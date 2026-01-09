@@ -7,26 +7,25 @@ const CandidateDetails = () => {
   const [candidate, setCandidate] = useState(null);
 
   useEffect(() => {
-    api
-      .get(`/candidates/${id}`)
-      .then((res) => setCandidate(res.data))
-      .catch((err) => console.error(err));
+    api.get(`/candidates/${id}`).then((res) => setCandidate(res.data));
   }, [id]);
 
   if (!candidate) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl p-6 shadow">
-        <div className="flex gap-6">
+    <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow">
+        <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
           <img
             src={candidate.image}
             alt={candidate.fullName}
-            className="w-40 h-40 object-cover rounded-xl"
+            className="w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover"
           />
 
-          <div>
-            <h1 className="text-2xl font-semibold">{candidate.fullName}</h1>
+          <div className="text-center sm:text-left">
+            <h1 className="text-xl sm:text-2xl font-semibold">
+              {candidate.fullName}
+            </h1>
             <p className="text-gray-500">{candidate.party}</p>
             <p className="text-sm text-gray-400 mt-1">
               Votes: {candidate.voteCount}
@@ -35,9 +34,9 @@ const CandidateDetails = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow space-y-4">
-        <h3 className="font-semibold">Personal Information</h3>
-
+      {/* INFO */}
+      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow space-y-3 text-sm">
+        <h3 className="font-semibold text-base">Personal Information</h3>
         <p>
           <b>Gender:</b> {candidate.gender}
         </p>
@@ -52,43 +51,6 @@ const CandidateDetails = () => {
         </p>
         <p>
           <b>Email:</b> {candidate.email || "N/A"}
-        </p>
-
-        <p>
-          <b>Address:</b> {candidate.address?.village},{" "}
-          {candidate.address?.district}, {candidate.address?.state}
-        </p>
-      </div>
-
-      <div className="bg-white rounded-2xl p-6 shadow space-y-3">
-        <h3 className="font-semibold">Vision & Work</h3>
-
-        <p>
-          <b>Motto:</b> {candidate.motto}
-        </p>
-
-        <div>
-          <b>Good Works:</b>
-          <ul className="list-disc ml-6">
-            {candidate.goodWorks?.map((w, i) => (
-              <li key={i}>{w}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <b>Bad Works:</b>
-          <ul className="list-disc ml-6">
-            {candidate.badWorks?.length > 0 ? (
-              candidate.badWorks.map((w, i) => <li key={i}>{w}</li>)
-            ) : (
-              <li>None</li>
-            )}
-          </ul>
-        </div>
-
-        <p>
-          <b>Experience:</b> {candidate.experience}
         </p>
       </div>
     </div>

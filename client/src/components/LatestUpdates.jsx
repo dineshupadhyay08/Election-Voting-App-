@@ -1,20 +1,8 @@
 const updates = [
-  {
-    title: "PM Kisan Yojana",
-    desc: "₹6000/year direct benefit transfer",
-  },
-  {
-    title: "Jan Dhan Account",
-    desc: "Zero balance bank account",
-  },
-  {
-    title: "Atal Pension Yojana",
-    desc: "Retirement savings scheme",
-  },
-  {
-    title: "Pradhan Mantri Fasal Bima",
-    desc: "Crop insurance scheme",
-  },
+  { title: "PM Kisan Yojana", desc: "₹6000/year direct benefit transfer" },
+  { title: "Jan Dhan Account", desc: "Zero balance bank account" },
+  { title: "Atal Pension Yojana", desc: "Retirement savings scheme" },
+  { title: "Pradhan Mantri Fasal Bima", desc: "Crop insurance scheme" },
 ];
 
 const LatestUpdates = () => {
@@ -25,7 +13,7 @@ const LatestUpdates = () => {
         <span className="text-indigo-600 text-sm">See all</span>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {updates.map((u, i) => (
           <div key={i} className="flex gap-3 bg-gray-50 p-3 rounded-xl">
             <img src="/logo.png" className="w-8 h-8" />

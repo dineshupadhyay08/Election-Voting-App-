@@ -77,3 +77,116 @@ button:focus-visible {
 .icon-ui {
   @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-500;
 }
+
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   MOBILE-FIRST BASE
+========================= */
+body {
+  font-size: 14px;
+}
+
+/* =========================
+   SIDEBAR CONTROL
+========================= */
+/* Mobile: hide sidebar */
+@media (max-width: 768px) {
+  .sidebar,
+  aside {
+    display: none !important;
+  }
+}
+
+/* =========================
+   HEADER FIX
+========================= */
+@media (max-width: 768px) {
+  header {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* =========================
+   MAIN CONTENT FIX
+========================= */
+@media (max-width: 768px) {
+  main {
+    padding: 1rem !important;
+  }
+}
+
+/* =========================
+   GRID NORMALIZATION
+========================= */
+/* Force cards to feel stacked */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =========================
+   CARD BEHAVIOUR
+========================= */
+@media (max-width: 768px) {
+  .rounded-xl,
+  .rounded-2xl {
+    border-radius: 14px;
+  }
+
+  .shadow,
+  .shadow-md {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* =========================
+   BUTTON UX
+========================= */
+@media (max-width: 768px) {
+  button {
+    min-height: 42px;
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   IMAGE FIX
+========================= */
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* =========================
+   TABLE / OVERFLOW SAFETY
+========================= */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* =========================
+   TOUCH IMPROVEMENTS
+========================= */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
