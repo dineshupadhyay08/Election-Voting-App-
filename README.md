@@ -20,7 +20,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 - Create, update, delete elections (Admin only)
 - View all elections (Voters)
 - Live / Upcoming election handling
-- Election status & dates.
+- Election status & dates
 
 ---
 
