@@ -59,7 +59,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ### Backend
 - Node.js
-- Express.js.
+- Express.js
 - MongoDB (Mongoose)
 - JWT Authentication
 - Cookie-based auth
