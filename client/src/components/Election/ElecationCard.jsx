@@ -1,11 +1,36 @@
-const ElectionCard = ({ election, isAdmin, onEdit }) => {
+import { useNavigate } from "react-router-dom";
+
+const ElectionCard = ({ election, isAdmin, onEdit, onDelete }) => {
+  const navigate = useNavigate();
   const totalVotes = election.voters?.length || 0;
+  const totalCandidates = election.candidates?.length || 0;
+  const voterTurnout =
+    totalCandidates > 0 ? Math.round((totalVotes / totalCandidates) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow space-y-4">
+    <div
+      className="bg-white rounded-2xl p-5 shadow space-y-4 cursor-pointer hover:shadow-lg transition"
+      onClick={() => navigate(`/elections/${election._id}`)}
+    >
+      {/* THUMBNAIL IMAGE */}
+      {election.thumbnail && (
+        <img
+          src={election.thumbnail}
+          alt={election.title}
+          className="w-full h-32 object-cover rounded-lg mb-4"
+        />
+      )}
+
       {/* TITLE + STATUS */}
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold">{election.title}</h3>
+        <h3 className="font-semibold flex items-center gap-2">
+          {election.status === "LIVE" && (
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          )}
+          <span className={election.status === "LIVE" ? "text-green-600" : ""}>
+            {election.title}
+          </span>
+        </h3>
 
         <span
           className={`text-xs px-2 py-1 rounded ${
@@ -21,46 +46,72 @@ const ElectionCard = ({ election, isAdmin, onEdit }) => {
       {/* CATEGORY */}
       <p className="text-sm text-gray-500">{election.category}</p>
 
-      {/* DATE INFO */}
-      <p className="text-xs text-gray-400">
-        {new Date(election.startDate).toDateString()} –{" "}
-        {new Date(election.endDate).toDateString()}
-      </p>
+      {/* VOTER TURNOUT */}
+      <div className="flex justify-between items-center">
+        <p className="text-sm">
+          Voter Turnout: <b>{voterTurnout}%</b>
+        </p>
+        <p className="text-sm text-gray-500">
+          {totalVotes}/{totalCandidates} votes
+        </p>
+      </div>
 
-      {/* VOTES */}
-      <p className="text-sm">
-        Votes cast: <b>{totalVotes}</b>
-      </p>
-
-      {/* CANDIDATES (REAL BACKEND DATA) */}
-      <ul className="text-sm text-gray-600 space-y-1">
+      {/* TOP 3 CANDIDATES */}
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Top Candidates</h4>
         {election.candidates?.length > 0 ? (
           election.candidates.slice(0, 3).map((c) => (
-            <li key={c._id}>
-              • {c.name} ({c.party})
-            </li>
+            <div key={c._id} className="flex items-center gap-3">
+              <img
+                src={c.image || "/logo.png"}
+                alt={c.fullName}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{c.fullName}</p>
+                <p className="text-xs text-gray-500">({c.party})</p>
+              </div>
+              <p className="text-sm font-semibold">{c.voteCount || 0} votes</p>
+            </div>
           ))
         ) : (
-          <li>No candidates added yet</li>
+          <p className="text-sm text-gray-500">No candidates added yet</p>
         )}
-      </ul>
+      </div>
 
-      <p className="text-indigo-600 text-sm cursor-pointer">
-        See all candidates →
-      </p>
-
-      {/* ACTIONS */}
       <div className="flex justify-between items-center">
-        {election.status === "LIVE" && (
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-            Vote Now
-          </button>
-        )}
+        <p
+          className="text-indigo-600 text-sm cursor-pointer hover:underline"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/candidates?electionId=${election._id}`);
+          }}
+        >
+          See all candidates →
+        </p>
 
+        {/* ACTIONS */}
         {isAdmin && (
-          <button onClick={onEdit} className="text-indigo-600 text-sm">
-            Edit
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="text-indigo-600 text-sm"
+            >
+              Edit
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="text-red-600 text-sm"
+            >
+              Delete
+            </button>
+          </div>
         )}
       </div>
     </div>

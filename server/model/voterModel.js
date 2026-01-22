@@ -31,6 +31,12 @@ const voterSchema = new Schema(
       required: true,
     },
 
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
+
     address: {
       village: String,
       gramPanchayat: String,
@@ -51,7 +57,7 @@ const voterSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = model("voter", voterSchema);

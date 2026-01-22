@@ -1,4 +1,4 @@
-const UpcomingElectionCard = ({ election }) => {
+const UpcomingElectionCard = ({ election, isAdmin, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-2xl p-5 shadow flex justify-between items-center">
       <div>

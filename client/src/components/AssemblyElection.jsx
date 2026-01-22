@@ -8,7 +8,8 @@ const AssemblyElectionCard = () => {
 
   const [form, setForm] = useState({
     title: "",
-    electionDate: "",
+    startDate: "",
+    endDate: "",
   });
 
   const [timeLeft, setTimeLeft] = useState({
@@ -26,7 +27,8 @@ const AssemblyElectionCard = () => {
       if (data) {
         setForm({
           title: data.title || "",
-          electionDate: data.electionDate ? data.electionDate.slice(0, 10) : "",
+          startDate: data.startDate ? data.startDate.slice(0, 10) : "",
+          endDate: data.endDate ? data.endDate.slice(0, 10) : "",
         });
       }
     });
@@ -52,7 +54,7 @@ const AssemblyElectionCard = () => {
       days: String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, "0"),
       hours: String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(
         2,
-        "0"
+        "0",
       ),
       minutes: String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, "0"),
       seconds: String(Math.floor((diff / 1000) % 60)).padStart(2, "0"),
@@ -60,10 +62,10 @@ const AssemblyElectionCard = () => {
   };
 
   useEffect(() => {
-    if (!election?.electionDate) return;
+    if (!election?.startDate) return;
 
     const interval = setInterval(() => {
-      setTimeLeft(calculateCountdown(election.electionDate));
+      setTimeLeft(calculateCountdown(election.startDate));
     }, 1000);
 
     return () => clearInterval(interval);
@@ -148,12 +150,24 @@ const AssemblyElectionCard = () => {
 
             <input
               type="date"
-              name="electionDate"
-              value={form.electionDate}
+              name="startDate"
+              value={form.startDate}
+              onChange={(e) =>
+                setForm({ ...form, [e.target.name]: e.target.value })
+              }
+              className="w-full border rounded-lg px-4 py-2 mb-3"
+              placeholder="Start Date"
+            />
+
+            <input
+              type="date"
+              name="endDate"
+              value={form.endDate}
               onChange={(e) =>
                 setForm({ ...form, [e.target.name]: e.target.value })
               }
               className="w-full border rounded-lg px-4 py-2 mb-4"
+              placeholder="End Date"
             />
 
             <div className="flex justify-between items-center">

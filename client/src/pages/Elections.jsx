@@ -39,8 +39,13 @@ const Elections = () => {
     fetchElections();
   }, [category, status, sort]);
 
-  const ongoing = elections.filter((e) => e.status === "LIVE");
-  const upcoming = elections.filter((e) => e.status === "UPCOMING");
+  // Temporarily force first election to be LIVE for testing
+  const modifiedElections = elections.map((e, index) =>
+    index === 0 ? { ...e, status: "LIVE" } : e,
+  );
+
+  const ongoing = modifiedElections.filter((e) => e.status === "LIVE");
+  const upcoming = modifiedElections.filter((e) => e.status === "UPCOMING");
 
   return (
     <div className="space-y-6">
@@ -49,9 +54,23 @@ const Elections = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
           <h1 className="text-xl font-semibold">Elections</h1>
 
-          <button className="border rounded-lg px-4 py-2 text-sm text-gray-600">
-            Filters ▾
-          </button>
+          <div className="flex gap-3">
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  setEditElection(null);
+                  setShowModal(true);
+                }}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                Add Election
+              </button>
+            )}
+
+            <button className="border rounded-lg px-4 py-2 text-sm text-gray-600">
+              Filters ▾
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
@@ -123,7 +142,22 @@ const Elections = () => {
             <h2 className="font-semibold text-lg mb-4">Upcoming Elections</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {upcoming.map((e) => (
-                <UpcomingElectionCard key={e._id} election={e} />
+                <UpcomingElectionCard
+                  key={e._id}
+                  election={e}
+                  isAdmin={isAdmin}
+                  onEdit={() => {
+                    setEditElection(e);
+                    setShowModal(true);
+                  }}
+                  onDelete={() => {
+                    if (window.confirm(`Delete election "${e.title}"?`)) {
+                      api.delete(`/elections/${e._id}`).then(() => {
+                        fetchElections();
+                      });
+                    }
+                  }}
+                />
               ))}
             </div>
           </div>

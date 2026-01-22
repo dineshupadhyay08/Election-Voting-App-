@@ -26,6 +26,7 @@ const {
   voteCandidates,
   getAllCandidates,
   updateCandidate,
+  getParties,
 } = require("../controller/candidatesController");
 
 /* =========================
@@ -67,7 +68,7 @@ router.get("/elections/:id", authMiddleware, getElections);
 router.get(
   "/elections/:id/candidates",
   authMiddleware,
-  getCandidatesOfElection
+  getCandidatesOfElection,
 );
 
 /* 👑 ADMIN – CREATE ELECTION */
@@ -81,7 +82,7 @@ router.delete(
   "/elections/:id",
   authMiddleware,
   adminMiddleware,
-  removeElection
+  removeElection,
 );
 
 /* ======================================================
@@ -98,14 +99,14 @@ router.delete(
   "/candidates/:id",
   authMiddleware,
   adminMiddleware,
-  removeCandidate
+  removeCandidate,
 );
 
 router.patch(
   "/candidates/:id",
   authMiddleware,
   adminMiddleware,
-  updateCandidate
+  updateCandidate,
 );
 
 /* 🔐 USER – VIEW CANDIDATE */

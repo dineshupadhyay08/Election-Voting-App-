@@ -67,7 +67,10 @@ const loginVoterController = async (req, res, next) => {
       return next(new HttpError("Please provide email and password.", 422));
     }
 
-    const voter = await VoterModel.findOne({ email: email.toLowerCase() });
+    const voter = await VoterModel.findOne({
+      email: email.toLowerCase(),
+    }).select("+password"); // ⭐ MOST IMPORTANT LINE
+
     if (!voter) {
       return next(new HttpError("Invalid credentials.", 401));
     }
@@ -80,12 +83,11 @@ const loginVoterController = async (req, res, next) => {
     const { _id: id, isAdmin, votedElections } = voter;
     const token = generateToken({ id, isAdmin });
 
-    // ✅ SET COOKIE HERE
     res
       .cookie("token", token, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false, // localhost
+        secure: false,
         maxAge: 24 * 60 * 60 * 1000,
       })
       .json({
@@ -94,6 +96,7 @@ const loginVoterController = async (req, res, next) => {
         votedElections,
       });
     console.log("LOGIN BODY:", req.body);
+    console.log(voter);
   } catch (err) {
     console.log("Login error:", err);
     return next(new HttpError("Login failed. Try again later.", 500));

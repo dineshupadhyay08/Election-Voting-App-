@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Home, Vote, History, User } from "lucide-react";
+import { Home, Vote, History, User, Flag } from "lucide-react";
 
 const Sidebar = () => {
   const linkClass = ({ isActive }) =>
@@ -37,6 +37,10 @@ const Sidebar = () => {
 
         <NavLink to="/candidates" className={linkClass}>
           <Vote size={18} /> Candidates
+        </NavLink>
+
+        <NavLink to="/party" className={linkClass}>
+          <Flag size={18} /> Party
         </NavLink>
 
         <NavLink to="/poll-history" className={linkClass}>

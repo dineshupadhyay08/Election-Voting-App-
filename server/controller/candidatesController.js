@@ -99,7 +99,7 @@ module.exports = { getAllCandidates };
 const getCandidate = async (req, res, next) => {
   try {
     const candidate = await Candidate.findById(req.params.id).populate(
-      "election"
+      "election",
     );
 
     if (!candidate) {
@@ -189,6 +189,35 @@ const removeCandidate = async (req, res, next) => {
 };
 
 /* ================================
+   GET PARTIES (USER)
+================================ */
+const getParties = async (req, res, next) => {
+  try {
+    const parties = await Candidate.aggregate([
+      {
+        $group: {
+          _id: "$party",
+          symbol: { $first: "$symbol" },
+          candidateCount: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          party: "$_id",
+          symbol: 1,
+          candidateCount: 1,
+        },
+      },
+    ]);
+
+    res.json(parties);
+  } catch (error) {
+    console.error("AGGREGATION ERROR:", error);
+    next(new HttpError("Fetching parties failed", 500));
+  }
+};
+
+/* ================================
    VOTE CANDIDATE (USER)
 ================================ */
 const voteCandidates = async (req, res, next) => {
@@ -214,4 +243,5 @@ module.exports = {
   updateCandidate,
   removeCandidate,
   voteCandidates,
+  getParties,
 };
