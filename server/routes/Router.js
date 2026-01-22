@@ -8,6 +8,7 @@ const {
   loginVoterController,
   getVoterController,
   getMyProfileController,
+  updateVoterController,
 } = require("../controller/voterController");
 
 const {
@@ -47,6 +48,7 @@ router.post("/voters/login", loginVoterController);
    VOTER ROUTES (PROTECTED)
 ====================================================== */
 router.get("/voters/me", authMiddleware, getMyProfileController);
+router.put("/voters/update", authMiddleware, updateVoterController);
 router.get("/voters/:id", authMiddleware, getVoterController);
 
 /* ======================================================

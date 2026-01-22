@@ -1,6 +1,20 @@
-import { Bell, Search, Menu } from "lucide-react";
+import { Bell, Search, Menu, User } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Notification from "./Notification";
 
 const Header = ({ onMenuClick }) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
     <>
       {/* ================= DESKTOP HEADER ================= */}
@@ -15,15 +29,22 @@ const Header = ({ onMenuClick }) => {
         </div>
 
         <div className="flex items-center gap-5">
-          <div className="relative cursor-pointer">
+          <div
+            className="relative cursor-pointer"
+            onClick={handleNotificationClick}
+          >
             <Bell className="text-gray-600" size={20} />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-indigo-600 rounded-full"></span>
+            <Notification
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+            />
           </div>
 
-          <img
-            src="/user.png"
-            alt="user"
-            className="w-8 h-8 rounded-full object-cover cursor-pointer"
+          <User
+            className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
+            size={24}
+            onClick={handleProfileClick}
           />
         </div>
       </div>
@@ -42,9 +63,16 @@ const Header = ({ onMenuClick }) => {
             className="w-10 h-10 rounded-full object-cover"
           />
 
-          <div className="relative">
+          <div
+            className="relative cursor-pointer"
+            onClick={handleNotificationClick}
+          >
             <Bell size={20} />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-indigo-600 rounded-full"></span>
+            <Notification
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+            />
           </div>
         </div>
 

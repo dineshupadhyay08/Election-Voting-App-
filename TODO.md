@@ -1,19 +1,11 @@
-# TODO: Add Parties & Candidates Component to Home Page
+# TODO: Fix Header, Notification, and Profile Sections
 
-## Server Side
+## Tasks
 
-- [x] Add `getParties` function in `server/controller/candidatesController.js` to fetch unique parties with symbols and candidate counts.
-- [x] Add GET route for `/parties` in `server/routes/Router.js`.
-
-## Client Side
-
-- [x] Create new component `client/src/components/PartiesCandidates.jsx` that fetches parties and displays them in a grid.
-- [x] Implement click functionality to show party details and candidates (using modal or expansion).
-- [x] Add admin features for adding/removing parties and candidates.
-- [x] Update `client/src/pages/Home.jsx` to import and use `<PartiesCandidates />` instead of dummy data.
-
-## Testing
-
-- [ ] Test the new API endpoint `/parties`.
-- [ ] Test component rendering and click functionality.
-- [ ] Ensure proper error handling and loading states.
+- [ ] Create Notification component (client/src/components/Notification.jsx)
+- [ ] Update Header.jsx to make Bell icon clickable (show notification dropdown/modal)
+- [ ] Update Header.jsx to make user image clickable (navigate to profile or show profile dropdown)
+- [ ] Enhance Profile.jsx to allow editing user data (name, email, mobile)
+- [ ] Improve UI styling for better user experience
+- [ ] Test clickable elements and editing functionality
+- [ ] Ensure UI is responsive and visually appealing

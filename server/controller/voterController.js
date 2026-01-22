@@ -22,7 +22,7 @@ const registerVoterController = async (req, res, next) => {
 
     if (password.trim().length < 6) {
       return next(
-        new HttpError("Password must be at least 6 characters.", 422)
+        new HttpError("Password must be at least 6 characters.", 422),
       );
     }
 
@@ -142,10 +142,52 @@ const getMyProfileController = async (req, res, next) => {
   }
 };
 
+//******* UPDATE VOTER PROFILE *********//
+const updateVoterController = async (req, res, next) => {
+  try {
+    const { fullName, email, mobile_number } = req.body;
+
+    if (!req.user || !req.user.id) {
+      return next(new HttpError("User not authenticated", 401));
+    }
+
+    // Check if email is already taken by another user
+    if (email) {
+      const existingVoter = await VoterModel.findOne({
+        email: email.toLowerCase(),
+        _id: { $ne: req.user.id },
+      });
+      if (existingVoter) {
+        return next(new HttpError("Email already exists.", 422));
+      }
+    }
+
+    const updatedVoter = await VoterModel.findByIdAndUpdate(
+      req.user.id,
+      {
+        ...(fullName && { fullName }),
+        ...(email && { email: email.toLowerCase() }),
+        ...(mobile_number && { mobile_number }),
+      },
+      { new: true },
+    ).select("-password");
+
+    if (!updatedVoter) {
+      return next(new HttpError("Voter not found", 404));
+    }
+
+    res.status(200).json(updatedVoter);
+  } catch (error) {
+    console.log("UPDATE VOTER ERROR:", error);
+    return next(new HttpError("Profile update failed", 500));
+  }
+};
+
 // ✅ Export all controllers
 module.exports = {
   registerVoterController,
   loginVoterController,
   getVoterController,
   getMyProfileController,
+  updateVoterController,
 };
