@@ -51,7 +51,7 @@ const Footer = () => {
         <div>
           <h2 className="text-lg font-bold text-white mb-3">Contact</h2>
           <p className="text-sm">📍 Gram Panchayat Kolasar, Rajasthan</p>
-          <p className="text-sm">📞 +91 98765 43210</p>
+          <p className="text-sm">📞 +91 98765 43211</p>
           <p className="text-sm">✉️ support@panchayatvote.in</p>
         </div>
       </div>
