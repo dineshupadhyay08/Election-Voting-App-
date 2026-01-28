@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, User } from "lucide-react";
+import { Bell, Search, Menu, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
@@ -14,6 +14,16 @@ const Header = ({ onMenuClick }) => {
   const handleProfileClick = () => {
     navigate("/profile");
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("isAdmin");
+    navigate("/login");
+    // Optionally show success message
+    alert("Logged out successfully");
+  };
+
+  const isLoggedIn = localStorage.getItem("userId");
 
   return (
     <>
@@ -46,6 +56,15 @@ const Header = ({ onMenuClick }) => {
             size={24}
             onClick={handleProfileClick}
           />
+
+          {isLoggedIn && (
+            <LogOut
+              className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
+              size={24}
+              onClick={handleLogout}
+              title="Logout"
+            />
+          )}
         </div>
       </div>
 
@@ -74,6 +93,15 @@ const Header = ({ onMenuClick }) => {
               onClose={() => setShowNotifications(false)}
             />
           </div>
+
+          {isLoggedIn && (
+            <LogOut
+              className="text-gray-700 cursor-pointer hover:text-gray-800 transition-colors"
+              size={20}
+              onClick={handleLogout}
+              title="Logout"
+            />
+          )}
         </div>
 
         <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
