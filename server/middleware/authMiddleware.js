@@ -21,11 +21,11 @@ const authMiddleware = (req, res, next) => {
 
     if (!token) {
       return next(
-        new HttpError("Authentication required. No token provided.", 401)
+        new HttpError("Authentication required. No token provided.", 401),
       );
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SRCRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // console.log("JWT DECODED:", decoded);
     req.user = decoded;
 

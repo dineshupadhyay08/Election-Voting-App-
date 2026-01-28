@@ -37,3 +37,5 @@ async function hashExistingPasswords() {
     console.log("Disconnected from MongoDB");
   }
 }
+
+hashExistingPasswords();
