@@ -25,7 +25,9 @@ const authMiddleware = (req, res, next) => {
       );
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret =
+      process.env.JWT_SECRET || "default_secret_key_change_in_production";
+    const decoded = jwt.verify(token, secret);
     // console.log("JWT DECODED:", decoded);
     req.user = decoded;
 

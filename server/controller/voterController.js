@@ -54,7 +54,9 @@ const registerVoterController = async (req, res, next) => {
 };
 
 const generateToken = (payload) => {
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
+  const secret =
+    process.env.JWT_SECRET || "default_secret_key_change_in_production";
+  const token = jwt.sign(payload, secret, { expiresIn: "1d" });
   return token;
 };
 
