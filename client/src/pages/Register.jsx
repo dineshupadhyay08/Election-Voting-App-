@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 
 const Register = () => {
@@ -15,6 +16,8 @@ const Register = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -36,7 +39,7 @@ const Register = () => {
       setLoading(true);
       await axios.post(
         `${import.meta.env.VITE_API_URL}/voters/register`,
-        formData
+        formData,
       );
       navigate("/login");
     } catch (err) {
@@ -94,25 +97,43 @@ const Register = () => {
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="input-ui"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="input-ui pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="icon-ui"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
-          <input
-            type="password"
-            name="password2"
-            placeholder="Confirm Password"
-            value={formData.password2}
-            onChange={handleChange}
-            className="input-ui"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="password2"
+              placeholder="Confirm Password"
+              value={formData.password2}
+              onChange={handleChange}
+              className="input-ui pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="icon-ui"
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
           <button
             type="submit"
