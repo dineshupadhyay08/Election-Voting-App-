@@ -5,17 +5,18 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   const [form, setForm] = useState({
     fullName: "",
     gender: "",
+    age: "",
     mobileNumber: "",
     party: "",
     image: "",
     motto: "",
-    electionId: "",
-    fatherName: "",
-    motherName: "",
-    email: "",
-    address: "",
-    goodWorks: "",
-    badWorks: "",
+    election: "",
+    address: {
+      village: "",
+      district: "",
+      state: "",
+    },
+    goodWorks: [],
     experience: "",
   });
 
@@ -32,34 +33,38 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
       setForm({
         fullName: candidate.fullName || "",
         gender: candidate.gender || "",
+        age: candidate.age || "",
         mobileNumber: candidate.mobileNumber || "",
         party: candidate.party || "",
         image: candidate.image || "",
         motto: candidate.motto || "",
-        electionId: candidate.election?._id || candidate.election || "",
-        fatherName: candidate.fatherName || "",
-        motherName: candidate.motherName || "",
-        email: candidate.email || "",
-        address: candidate.address || "",
-        goodWorks: candidate.goodWorks || "",
-        badWorks: candidate.badWorks || "",
+        election: candidate.election?._id || candidate.election || "",
+        address: {
+          village: candidate.address?.village || "",
+          district: candidate.address?.district || "",
+          state: candidate.address?.state || "",
+        },
+        goodWorks: Array.isArray(candidate.goodWorks)
+          ? candidate.goodWorks
+          : [],
         experience: candidate.experience || "",
       });
     } else {
       setForm({
         fullName: "",
         gender: "",
+        age: "",
         mobileNumber: "",
         party: "",
         image: "",
         motto: "",
-        electionId: "",
-        fatherName: "",
-        motherName: "",
-        email: "",
-        address: "",
-        goodWorks: "",
-        badWorks: "",
+        election: "",
+        address: {
+          village: "",
+          district: "",
+          state: "",
+        },
+        goodWorks: [],
         experience: "",
       });
     }
@@ -76,17 +81,45 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   };
 
   const handleSubmit = async () => {
+    // Validation for required fields
+    if (
+      !form.fullName ||
+      !form.gender ||
+      !form.age ||
+      !form.mobileNumber ||
+      !form.party ||
+      !form.address.village ||
+      !form.election
+    ) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
     setLoading(true);
     try {
       const imageUrl = await handleImageUpload();
-      const dataToSend = { ...form, image: imageUrl };
+      const dataToSend = {
+        ...form,
+        image: imageUrl,
+        // Ensure address object is complete
+        address: {
+          village: form.address.village || "",
+          district: form.address.district || "",
+          state: form.address.state || "",
+        },
+        // Ensure goodWorks is an array
+        goodWorks: Array.isArray(form.goodWorks) ? form.goodWorks : [],
+      };
 
+      console.log("Add Candidate payload:", dataToSend);
+
+      let response;
       if (candidate) {
-        await api.patch(`/candidates/${candidate._id}`, dataToSend);
+        response = await api.patch(`/candidates/${candidate._id}`, dataToSend);
       } else {
-        await api.post("/candidates", dataToSend);
+        response = await api.post("/candidates", dataToSend);
       }
-      onSuccess();
+      onSuccess(response.data);
       onClose();
     } catch (error) {
       console.error(
@@ -102,7 +135,9 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">Add Candidate</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {candidate ? "Update Candidate" : "Add Candidate"}
+        </h3>
 
         <div className="space-y-3">
           <input
@@ -122,6 +157,14 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
             <option value="FEMALE">Female</option>
             <option value="OTHER">Other</option>
           </select>
+
+          <input
+            type="number"
+            className="w-full border px-4 py-2 rounded-lg"
+            placeholder="Age *"
+            value={form.age}
+            onChange={(e) => setForm({ ...form, age: e.target.value })}
+          />
 
           <input
             className="w-full border px-4 py-2 rounded-lg"
@@ -146,15 +189,15 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
 
           <input
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Motto *"
+            placeholder="Motto"
             value={form.motto}
             onChange={(e) => setForm({ ...form, motto: e.target.value })}
           />
 
           <select
             className="w-full border px-4 py-2 rounded-lg"
-            value={form.electionId}
-            onChange={(e) => setForm({ ...form, electionId: e.target.value })}
+            value={form.election}
+            onChange={(e) => setForm({ ...form, election: e.target.value })}
           >
             <option value="">Select Election *</option>
             {elections.map((election) => (
@@ -164,48 +207,57 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
             ))}
           </select>
 
+          {/* Address Fields */}
           <input
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Father Name"
-            value={form.fatherName}
-            onChange={(e) => setForm({ ...form, fatherName: e.target.value })}
+            placeholder="Village *"
+            value={form.address.village}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address: { ...form.address, village: e.target.value },
+              })
+            }
           />
 
           <input
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Mother Name"
-            value={form.motherName}
-            onChange={(e) => setForm({ ...form, motherName: e.target.value })}
+            placeholder="District"
+            value={form.address.district}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address: { ...form.address, district: e.target.value },
+              })
+            }
           />
 
           <input
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-
-          <input
-            className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Address"
-            value={form.address}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            placeholder="State"
+            value={form.address.state}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address: { ...form.address, state: e.target.value },
+              })
+            }
           />
 
           <textarea
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Good Works"
+            placeholder="Good Works (comma separated)"
             rows="2"
-            value={form.goodWorks}
-            onChange={(e) => setForm({ ...form, goodWorks: e.target.value })}
-          />
-
-          <textarea
-            className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Bad Works"
-            rows="2"
-            value={form.badWorks}
-            onChange={(e) => setForm({ ...form, badWorks: e.target.value })}
+            value={form.goodWorks.join(", ")}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                goodWorks: e.target.value
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter((item) => item),
+              })
+            }
           />
 
           <textarea

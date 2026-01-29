@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const fileUpload = require("express-fileupload");
 
 /* =========================
    CONTROLLERS
@@ -116,5 +117,28 @@ router.get("/candidates/:id", authMiddleware, getCandidate);
 
 /* 🔐 USER – VOTE */
 router.patch("/candidates/:id/vote", authMiddleware, voteCandidates);
+
+/* ================================
+   UPLOAD ROUTE
+================================ */
+const cloudinary = require("../utils/cloudinary");
+
+router.post("/upload", authMiddleware, async (req, res) => {
+  try {
+    if (!req.files || !req.files.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const file = req.files.file;
+    const result = await cloudinary.uploader.upload(file.tempFilePath, {
+      folder: "candidates",
+    });
+
+    res.json({ url: result.secure_url });
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ message: "Upload failed" });
+  }
+});
 
 module.exports = router;

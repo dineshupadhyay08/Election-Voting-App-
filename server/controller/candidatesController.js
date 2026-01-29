@@ -7,59 +7,65 @@ const HttpError = require("../middleware/HttpError.js");
 ================================ */
 const addCandidate = async (req, res, next) => {
   try {
+    console.log("ADD CANDIDATE - Request body:", req.body); // Debug log
+
     const {
       fullName,
       gender,
+      age,
       mobileNumber,
       party,
       image,
       motto,
-      electionId,
-      fatherName,
-      motherName,
-      email,
+      election,
       address,
       goodWorks,
-      badWorks,
       experience,
     } = req.body;
 
+    // Updated validation to match frontend requirements
     if (
       !fullName ||
       !gender ||
+      !age ||
       !mobileNumber ||
       !party ||
-      !image ||
-      !motto ||
-      !electionId
+      !address?.village ||
+      !election
     ) {
+      console.log("Missing required fields:", {
+        fullName,
+        gender,
+        age,
+        mobileNumber,
+        party,
+        village: address?.village,
+        election,
+      }); // Debug log
       return next(new HttpError("Missing required fields", 422));
     }
 
-    const election = await Election.findById(electionId);
-    if (!election) {
+    const electionDoc = await Election.findById(election);
+    if (!electionDoc) {
       return next(new HttpError("Election not found", 404));
     }
 
     const candidate = await Candidate.create({
       fullName,
       gender,
+      age: Number(age), // Ensure age is a number
       mobileNumber,
       party,
-      image,
-      motto,
-      election: electionId,
-      fatherName,
-      motherName,
-      email,
+      image: image || "",
+      motto: motto || "",
+      election: election,
       address,
-      goodWorks,
-      badWorks,
-      experience,
+      goodWorks: Array.isArray(goodWorks) ? goodWorks : [],
+      experience: experience || "",
     });
 
-    election.candidates.push(candidate._id);
-    await election.save();
+    electionDoc.candidates.push(candidate._id);
+    await electionDoc.save();
 
     res.status(201).json(candidate);
   } catch (error) {
@@ -118,6 +124,8 @@ const getCandidate = async (req, res, next) => {
 
 const updateCandidate = async (req, res, next) => {
   try {
+    console.log("UPDATE CANDIDATE - Request body:", req.body); // Debug log
+
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) {
       return next(new HttpError("Candidate not found", 404));
@@ -126,40 +134,33 @@ const updateCandidate = async (req, res, next) => {
     const {
       fullName,
       gender,
-      fatherName,
-      motherName,
-      spouseName,
+      age,
       mobileNumber,
-      email,
-      address,
       party,
-      symbol,
       image,
       motto,
+      address,
       goodWorks,
-      badWorks,
       experience,
     } = req.body;
 
+    // Update fields if provided
     if (fullName !== undefined) candidate.fullName = fullName;
     if (gender !== undefined) candidate.gender = gender;
-    if (fatherName !== undefined) candidate.fatherName = fatherName;
-    if (motherName !== undefined) candidate.motherName = motherName;
-    if (spouseName !== undefined) candidate.spouseName = spouseName;
+    if (age !== undefined) candidate.age = Number(age);
     if (mobileNumber !== undefined) candidate.mobileNumber = mobileNumber;
-    if (email !== undefined) candidate.email = email;
-    if (address !== undefined) candidate.address = address;
     if (party !== undefined) candidate.party = party;
-    if (symbol !== undefined) candidate.symbol = symbol;
     if (image !== undefined) candidate.image = image;
     if (motto !== undefined) candidate.motto = motto;
-    if (goodWorks !== undefined) candidate.goodWorks = goodWorks;
-    if (badWorks !== undefined) candidate.badWorks = badWorks;
+    if (address !== undefined) candidate.address = address;
+    if (goodWorks !== undefined)
+      candidate.goodWorks = Array.isArray(goodWorks) ? goodWorks : [];
     if (experience !== undefined) candidate.experience = experience;
 
     await candidate.save();
     res.json(candidate);
   } catch (error) {
+    console.error("UPDATE CANDIDATE ERROR:", error);
     next(new HttpError("Update candidate failed", 500));
   }
 };

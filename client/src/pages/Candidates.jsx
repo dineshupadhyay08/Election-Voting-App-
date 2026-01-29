@@ -28,12 +28,24 @@ const Candidates = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* HEADER */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Candidates
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Select your candidate and make your vote count.
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Candidates
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Select your candidate and make your vote count.
+              </p>
+            </div>
+            {user?.isAdmin && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700"
+              >
+                Add Candidate
+              </button>
+            )}
+          </div>
         </div>
 
         {/* CANDIDATES */}
@@ -130,6 +142,20 @@ const Candidates = () => {
             onClose={() => {
               setShowModal(false);
               setEditingCandidate(null);
+            }}
+            onSuccess={(newCandidate) => {
+              if (editingCandidate) {
+                // Update existing candidate
+                setCandidates((prev) =>
+                  prev.map((c) =>
+                    c._id === newCandidate._id ? newCandidate : c,
+                  ),
+                );
+              } else {
+                // Add new candidate
+                setCandidates((prev) => [newCandidate, ...prev]);
+              }
+              alert("Candidate added successfully!");
             }}
           />
         )}
