@@ -123,7 +123,7 @@ router.patch("/candidates/:id/vote", authMiddleware, voteCandidates);
 ================================ */
 const cloudinary = require("../utils/cloudinary");
 
-router.post("/upload", authMiddleware, async (req, res) => {
+router.post("/upload", async (req, res) => {
   try {
     if (!req.files || !req.files.file) {
       return res.status(400).json({ message: "No file uploaded" });

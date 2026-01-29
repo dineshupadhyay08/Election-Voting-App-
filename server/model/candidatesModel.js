@@ -74,7 +74,7 @@ const candidateSchema = new Schema(
 
     motto: {
       type: String,
-      required: true, // vision / slogan
+      default: "", // vision / slogan
     },
 
     goodWorks: {
@@ -104,7 +104,7 @@ const candidateSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = model("Candidate", candidateSchema);

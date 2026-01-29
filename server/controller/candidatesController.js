@@ -177,14 +177,22 @@ const removeCandidate = async (req, res, next) => {
       return next(new HttpError("Candidate not found", 404));
     }
 
-    await Election.findByIdAndUpdate(candidate.election, {
-      $pull: { candidates: candidate._id },
-    });
+    // Check if election exists
+    const election = await Election.findById(candidate.election);
+    if (!election) {
+      return next(new HttpError("Election not found", 404));
+    }
 
+    // Remove candidate from election's candidates array
+    election.candidates.pull(candidate._id);
+    await election.save();
+
+    // Delete the candidate
     await candidate.deleteOne();
 
     res.json({ message: "Candidate removed successfully" });
   } catch (error) {
+    console.error("DELETE CANDIDATE ERROR:", error);
     next(new HttpError("Delete candidate failed", 500));
   }
 };
