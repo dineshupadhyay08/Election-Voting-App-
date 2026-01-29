@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../store/axios.js";
+import { toast } from "react-toastify";
 
 const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   const [form, setForm] = useState({
@@ -16,7 +17,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
       district: "",
       state: "",
     },
-    goodWorks: [],
+    goodWorks: "",
     experience: "",
   });
 
@@ -45,8 +46,8 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           state: candidate.address?.state || "",
         },
         goodWorks: Array.isArray(candidate.goodWorks)
-          ? candidate.goodWorks
-          : [],
+          ? candidate.goodWorks.join(", ")
+          : "",
         experience: candidate.experience || "",
       });
     } else {
@@ -91,7 +92,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
       !form.address.village ||
       !form.election
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -107,8 +108,8 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           district: form.address.district || "",
           state: form.address.state || "",
         },
-        // Ensure goodWorks is an array
-        goodWorks: Array.isArray(form.goodWorks) ? form.goodWorks : [],
+        // goodWorks is now a string
+        goodWorks: form.goodWorks,
       };
 
       console.log("Add Candidate payload:", dataToSend);
@@ -126,7 +127,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
         `Error ${candidate ? "updating" : "adding"} candidate:`,
         error,
       );
-      alert(`Error ${candidate ? "updating" : "adding"} candidate`);
+      toast.error(`Error ${candidate ? "updating" : "adding"} candidate`);
     } finally {
       setLoading(false);
     }
@@ -246,16 +247,13 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
 
           <textarea
             className="w-full border px-4 py-2 rounded-lg"
-            placeholder="Good Works (comma separated)"
+            placeholder="Good Works (describe your achievements)"
             rows="2"
-            value={form.goodWorks.join(", ")}
+            value={form.goodWorks}
             onChange={(e) =>
               setForm({
                 ...form,
-                goodWorks: e.target.value
-                  .split(",")
-                  .map((item) => item.trim())
-                  .filter((item) => item),
+                goodWorks: e.target.value,
               })
             }
           />

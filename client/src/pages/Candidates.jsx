@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MoreHorizontal, Award } from "lucide-react";
 import api from "../store/axios";
 import CandidateFormModal from "../components/Candidate/CandidateFormModal";
+import { toast } from "react-toastify";
 
 const Candidates = () => {
   const [candidates, setCandidates] = useState([]);
@@ -20,7 +21,20 @@ const Candidates = () => {
   }, []);
 
   const handleVote = (id) => {
-    alert(`Vote submitted for ${id}`);
+    toast.success(`Vote submitted for ${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this candidate?")) {
+      try {
+        await api.delete(`/candidates/${id}`);
+        setCandidates((prev) => prev.filter((c) => c._id !== id));
+        toast.success("Candidate deleted successfully!");
+      } catch (error) {
+        console.error("Delete error:", error);
+        toast.error("Failed to delete candidate");
+      }
+    }
   };
 
   return (
@@ -125,7 +139,7 @@ const Candidates = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => alert("Delete")}
+                    onClick={() => handleDelete(c._id)}
                     className="flex-1 bg-red-600 text-white py-1.5 rounded"
                   >
                     Delete
@@ -151,11 +165,12 @@ const Candidates = () => {
                     c._id === newCandidate._id ? newCandidate : c,
                   ),
                 );
+                toast.success("Candidate updated successfully!");
               } else {
                 // Add new candidate
                 setCandidates((prev) => [newCandidate, ...prev]);
+                toast.success("Candidate added successfully!");
               }
-              alert("Candidate added successfully!");
             }}
           />
         )}

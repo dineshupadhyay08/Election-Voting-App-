@@ -20,7 +20,7 @@ const Header = ({ onMenuClick }) => {
     localStorage.removeItem("isAdmin");
     navigate("/login");
     // Optionally show success message
-    alert("Logged out successfully");
+    toast.success("Logged out successfully");
   };
 
   const isLoggedIn = localStorage.getItem("userId");

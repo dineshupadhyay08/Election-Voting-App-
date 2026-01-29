@@ -1,10 +1,11 @@
 import React from "react";
+import { toast } from "react-toastify";
 
 const dataSections = {};
 
 const InfoCards = () => {
   const handleRestrictedClick = () => {
-    alert("कृपया लॉगिन करें। Redirecting...");
+    toast.info("कृपया लॉगिन करें। Redirecting...");
     setTimeout(() => (window.location.href = "/login"), 2000);
   };
 
@@ -16,10 +17,10 @@ const InfoCards = () => {
             {section === "pressReleases"
               ? "Press Releases"
               : section === "governmentDocs"
-              ? "Government Documents"
-              : section === "tenders"
-              ? "Tenders"
-              : "Latest Updates"}
+                ? "Government Documents"
+                : section === "tenders"
+                  ? "Tenders"
+                  : "Latest Updates"}
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {items.map((item, index) => (

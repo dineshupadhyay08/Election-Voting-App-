@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../store/axios.js";
+import { toast } from "react-toastify";
 
 const ElectionDetails = () => {
   const { id } = useParams();
@@ -26,7 +27,7 @@ const ElectionDetails = () => {
         setCandidates(candidatesRes.data);
       } catch (error) {
         console.error("Error fetching election details:", error);
-        alert(
+        toast.error(
           "Error loading election details. Please check the console for details.",
         );
       } finally {

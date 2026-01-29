@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
-import { Home, Vote, History, User, X } from "lucide-react";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Home, Vote, History, User, X, Flag } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const PublicLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FB] relative">
@@ -23,7 +24,7 @@ const PublicLayout = () => {
           />
 
           {/* Drawer */}
-          <div className="fixed top-0 left-0 h-full w-1/2 bg-white z-50 md:hidden shadow-xl">
+          <div className="fixed top-0 left-0 h-full w-64 bg-white z-50 md:hidden shadow-xl">
             {/* Close */}
             <div className="flex justify-end p-3">
               <X
@@ -32,8 +33,108 @@ const PublicLayout = () => {
               />
             </div>
 
-            {/* Sidebar content reused */}
-            <Sidebar />
+            {/* Mobile Sidebar Content */}
+            <div className="px-2">
+              {/* Logo */}
+              <div className="flex items-center justify-center px-2 py-2 border-b border-gray-200 cursor-pointer mb-4">
+                <img
+                  src="/Vote.jpg"
+                  onClick={() => {
+                    navigate("/");
+                    setMobileMenuOpen(false);
+                  }}
+                  alt="logo"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              </div>
+
+              {/* Navigation */}
+              <nav className="space-y-2">
+                <NavLink
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <Home size={18} /> Home
+                </NavLink>
+
+                <NavLink
+                  to="/elections"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <Vote size={18} /> Elections
+                </NavLink>
+
+                <NavLink
+                  to="/candidates"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <Vote size={18} /> Candidates
+                </NavLink>
+
+                <NavLink
+                  to="/party"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <Flag size={18} /> Party
+                </NavLink>
+
+                <NavLink
+                  to="/poll-history"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <History size={18} /> Poll History
+                </NavLink>
+
+                <NavLink
+                  to="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                      isActive
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <User size={18} /> Profile
+                </NavLink>
+              </nav>
+            </div>
           </div>
         </>
       )}
@@ -54,30 +155,64 @@ const PublicLayout = () => {
 
         {/* ================= MOBILE BOTTOM NAV ================= */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-sm z-30">
-          <div className="flex justify-around py-2 text-xs">
-            <NavLink to="/" className="flex flex-col items-center gap-1">
-              <Home size={18} />
+          <div className="grid grid-cols-5 justify-items-center py-2 text-xs">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 p-1 rounded ${
+                  isActive ? "text-indigo-600" : "text-gray-600"
+                }`
+              }
+            >
+              <Home size={16} />
               Home
             </NavLink>
 
             <NavLink
               to="/elections"
-              className="flex flex-col items-center gap-1"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 p-1 rounded ${
+                  isActive ? "text-indigo-600" : "text-gray-600"
+                }`
+              }
             >
-              <Vote size={18} />
-              Election
+              <Vote size={16} />
+              Elections
+            </NavLink>
+
+            <NavLink
+              to="/candidates"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 p-1 rounded ${
+                  isActive ? "text-indigo-600" : "text-gray-600"
+                }`
+              }
+            >
+              <Vote size={16} />
+              Candidates
             </NavLink>
 
             <NavLink
               to="/poll-history"
-              className="flex flex-col items-center gap-1"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 p-1 rounded ${
+                  isActive ? "text-indigo-600" : "text-gray-600"
+                }`
+              }
             >
-              <History size={18} />
+              <History size={16} />
               History
             </NavLink>
 
-            <NavLink to="/profile" className="flex flex-col items-center gap-1">
-              <User size={18} />
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 p-1 rounded ${
+                  isActive ? "text-indigo-600" : "text-gray-600"
+                }`
+              }
+            >
+              <User size={16} />
               Profile
             </NavLink>
           </div>

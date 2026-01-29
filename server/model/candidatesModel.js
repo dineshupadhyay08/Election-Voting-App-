@@ -78,8 +78,8 @@ const candidateSchema = new Schema(
     },
 
     goodWorks: {
-      type: [String], // development works
-      default: [],
+      type: String, // development works
+      default: "",
     },
 
     badWorks: {

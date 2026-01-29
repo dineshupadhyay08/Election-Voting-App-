@@ -60,7 +60,7 @@ const addCandidate = async (req, res, next) => {
       motto: motto || "",
       election: election,
       address,
-      goodWorks: Array.isArray(goodWorks) ? goodWorks : [],
+      goodWorks: goodWorks || "",
       experience: experience || "",
     });
 
@@ -150,11 +150,10 @@ const updateCandidate = async (req, res, next) => {
     if (age !== undefined) candidate.age = Number(age);
     if (mobileNumber !== undefined) candidate.mobileNumber = mobileNumber;
     if (party !== undefined) candidate.party = party;
-    if (image !== undefined) candidate.image = image;
+    if (image !== undefined && image !== "") candidate.image = image;
     if (motto !== undefined) candidate.motto = motto;
     if (address !== undefined) candidate.address = address;
-    if (goodWorks !== undefined)
-      candidate.goodWorks = Array.isArray(goodWorks) ? goodWorks : [];
+    if (goodWorks !== undefined) candidate.goodWorks = goodWorks || "";
     if (experience !== undefined) candidate.experience = experience;
 
     await candidate.save();

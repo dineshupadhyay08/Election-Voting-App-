@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../store/axios.js";
+import { toast } from "react-toastify";
 
 const ElectionFormModal = ({ election, onClose, onSuccess }) => {
   const [form, setForm] = useState({
@@ -25,7 +26,7 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
         try {
           dataToSend = JSON.parse(jsonData);
         } catch (error) {
-          alert("Invalid JSON format");
+          toast.error("Invalid JSON format");
           setLoading(false);
           return;
         }
@@ -34,7 +35,7 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
         try {
           dataToSend = JSON.parse(fileData);
         } catch (error) {
-          alert("Invalid JSON file");
+          toast.error("Invalid JSON file");
           setLoading(false);
           return;
         }
@@ -49,7 +50,7 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
       onClose();
     } catch (error) {
       console.error("Error saving election:", error);
-      alert("Error saving election");
+      toast.error("Error saving election");
     } finally {
       setLoading(false);
     }
