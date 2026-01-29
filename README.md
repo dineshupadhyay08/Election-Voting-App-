@@ -14,6 +14,9 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
   - **Voter**: View elections, candidates & vote
 - Protected routes using middleware
 
+- Email :- dienshu@gmail.com
+- Password :- Dinesh@123
+
 ---
 
 ### 🗳️ Elections
