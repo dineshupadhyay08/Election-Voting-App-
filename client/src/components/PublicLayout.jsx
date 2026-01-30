@@ -153,70 +153,43 @@ const PublicLayout = () => {
 
         <Footer />
 
-        {/* ================= MOBILE BOTTOM NAV ================= */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-sm z-30">
-          <div className="grid grid-cols-5 justify-items-center py-2 text-xs">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 p-1 rounded ${
-                  isActive ? "text-indigo-600" : "text-gray-600"
-                }`
-              }
-            >
-              <Home size={16} />
-              Home
-            </NavLink>
+        {/* Things to know */}
+        <div>
+          <h3 className="font-semibold mb-4">Things to know</h3>
 
-            <NavLink
-              to="/elections"
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 p-1 rounded ${
-                  isActive ? "text-indigo-600" : "text-gray-600"
-                }`
-              }
-            >
-              <Vote size={16} />
-              Elections
-            </NavLink>
-
-            <NavLink
-              to="/candidates"
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 p-1 rounded ${
-                  isActive ? "text-indigo-600" : "text-gray-600"
-                }`
-              }
-            >
-              <Vote size={16} />
-              Candidates
-            </NavLink>
-
-            <NavLink
-              to="/poll-history"
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 p-1 rounded ${
-                  isActive ? "text-indigo-600" : "text-gray-600"
-                }`
-              }
-            >
-              <History size={16} />
-              History
-            </NavLink>
-
-            <NavLink
-              to="/profile"
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 p-1 rounded ${
-                  isActive ? "text-indigo-600" : "text-gray-600"
-                }`
-              }
-            >
-              <User size={16} />
-              Profile
-            </NavLink>
+          {/* MOBILE */}
+          <div className="flex gap-4 sm:hidden">
+            {[
+              "Top Manifesto Highlights",
+              "FAQs & Voter Education",
+              "Find near by polling station",
+            ].map((text, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-2xl p-5 text-white text-sm text-center bg-gradient-to-br
+        from-purple-400 via-pink-400 to-orange-300"
+              >
+                {text}
+              </div>
+            ))}
           </div>
-        </nav>
+
+          {/* DESKTOP (UNCHANGED) */}
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              "Top Manifesto Highlights",
+              "FAQs & Voter Education",
+              "Find near by polling station",
+            ].map((t, index) => (
+              <div
+                key={t}
+                className="bg-gradient-to-r from-purple-200 to-pink-200 rounded-2xl p-6 shadow"
+              >
+                <p className="font-medium">{t}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
