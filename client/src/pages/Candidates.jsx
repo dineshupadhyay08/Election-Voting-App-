@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MoreHorizontal, Award } from "lucide-react";
+import { Award } from "lucide-react";
 import api from "../store/axios";
 import CandidateFormModal from "../components/Candidate/CandidateFormModal";
 import { toast } from "react-toastify";
@@ -10,6 +10,9 @@ const Candidates = () => {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [candidateToDelete, setCandidateToDelete] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,17 +27,31 @@ const Candidates = () => {
     toast.success(`Vote submitted for ${id}`);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this candidate?")) {
+  const handleDelete = (id) => {
+    const candidate = candidates.find((c) => c._id === id);
+    setCandidateToDelete(candidate);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (candidateToDelete) {
       try {
-        await api.delete(`/candidates/${id}`);
-        setCandidates((prev) => prev.filter((c) => c._id !== id));
+        await api.delete(`/candidates/${candidateToDelete._id}`);
+        setCandidates((prev) =>
+          prev.filter((c) => c._id !== candidateToDelete._id),
+        );
         toast.success("Candidate deleted successfully!");
-      } catch (error) {
-        console.error("Delete error:", error);
+      } catch (err) {
         toast.error("Failed to delete candidate");
       }
     }
+    setShowDeleteConfirm(false);
+    setCandidateToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setCandidateToDelete(null);
   };
 
   return (
@@ -51,6 +68,7 @@ const Candidates = () => {
                 Select your candidate and make your vote count.
               </p>
             </div>
+
             {user?.isAdmin && (
               <button
                 onClick={() => setShowModal(true)}
@@ -69,16 +87,13 @@ const Candidates = () => {
               key={c._id}
               className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition"
             >
-              {/* MOBILE + DESKTOP FLEX */}
               <div className="flex flex-row sm:flex-col gap-4">
                 {/* IMAGE */}
-                <div className="flex-shrink-0">
-                  <img
-                    src={c.image}
-                    alt={c.fullName}
-                    className="w-24 h-24 sm:w-full sm:h-48 object-cover rounded-xl"
-                  />
-                </div>
+                <img
+                  src={c.image}
+                  alt={c.fullName}
+                  className="w-24 h-24 sm:w-full sm:h-48 object-cover rounded-xl"
+                />
 
                 {/* INFO */}
                 <div className="flex-1">
@@ -94,18 +109,6 @@ const Candidates = () => {
                   <p className="text-sm text-gray-500 mt-1">
                     Age {c.age || 40}
                   </p>
-
-                  {/* PRIORITIES */}
-                  <ul className="mt-2 text-sm text-gray-600 space-y-1">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-                      Education development
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-                      Education development
-                    </li>
-                  </ul>
                 </div>
               </div>
 
@@ -138,6 +141,7 @@ const Candidates = () => {
                   >
                     Edit
                   </button>
+
                   <button
                     onClick={() => handleDelete(c._id)}
                     className="flex-1 bg-red-600 text-white py-1.5 rounded"
@@ -150,6 +154,7 @@ const Candidates = () => {
           ))}
         </div>
 
+        {/* ADD / EDIT MODAL */}
         {showModal && (
           <CandidateFormModal
             candidate={editingCandidate}
@@ -159,7 +164,6 @@ const Candidates = () => {
             }}
             onSuccess={(newCandidate) => {
               if (editingCandidate) {
-                // Update existing candidate
                 setCandidates((prev) =>
                   prev.map((c) =>
                     c._id === newCandidate._id ? newCandidate : c,
@@ -167,12 +171,50 @@ const Candidates = () => {
                 );
                 toast.success("Candidate updated successfully!");
               } else {
-                // Add new candidate
                 setCandidates((prev) => [newCandidate, ...prev]);
                 toast.success("Candidate added successfully!");
               }
             }}
           />
+        )}
+
+        {/* DELETE CONFIRMATION (FIXED) */}
+        {showDeleteConfirm && candidateToDelete && (
+          <>
+            {/* Background */}
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"></div>
+
+            {/* Card */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+              <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Delete Candidate
+                </h3>
+
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete{" "}
+                  <strong>{candidateToDelete.fullName}</strong>? This action
+                  cannot be undone.
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={cancelDelete}
+                    className="flex-1 border-2 border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50"
+                  >
+                    No
+                  </button>
+
+                  <button
+                    onClick={confirmDelete}
+                    className="flex-1 bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700"
+                  >
+                    Yes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

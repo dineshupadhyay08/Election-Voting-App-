@@ -1,3 +1,0 @@
-- [x] Update PartiesCandidates.jsx: Change grid to 4 columns for mobile, soft lavender background, ensure "See All →" bottom-right
-- [x] Update Home.jsx: Change "Things to know" titles, apply gradient backgrounds, make horizontally scrollable on mobile
-- [ ] Update PublicLayout.jsx: Adjust to 4 tabs, add active pill background

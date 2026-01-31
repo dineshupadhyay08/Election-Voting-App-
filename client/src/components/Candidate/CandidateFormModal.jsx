@@ -49,6 +49,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           ? candidate.goodWorks.join(", ")
           : "",
         experience: candidate.experience || "",
+        isGlobal: candidate.isGlobal !== undefined ? candidate.isGlobal : true,
       });
     } else {
       setForm({
