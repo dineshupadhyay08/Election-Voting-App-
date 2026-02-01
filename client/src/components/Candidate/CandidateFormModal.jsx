@@ -73,62 +73,52 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   }, [candidate]);
 
   const handleImageUpload = async () => {
-    if (!imageFile) return "";
+    if (!imageFile) return form.thumbnail || "";
+
     const formData = new FormData();
     formData.append("file", imageFile);
-    const response = await api.post("/upload", formData, {
+
+    const res = await api.post("/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data.url;
+
+    return res.data.url;
   };
 
   const handleSubmit = async () => {
-    // Validation for required fields
-    if (
-      !form.fullName ||
-      !form.gender ||
-      !form.age ||
-      !form.mobileNumber ||
-      !form.party ||
-      !form.address.village ||
-      !form.election
-    ) {
-      toast.error("Please fill in all required fields");
+    if (!form.title || !form.category || !form.startDate || !form.endDate) {
+      toast.error("Title, category, start date and end date are required");
+      return;
+    }
+
+    const start = new Date(form.startDate + "T00:00:00");
+    const end = new Date(form.endDate + "T23:59:59");
+
+    if (start >= end) {
+      toast.error("End date must be after start date");
       return;
     }
 
     setLoading(true);
     try {
-      const imageUrl = await handleImageUpload();
-      const dataToSend = {
+      const payload = {
         ...form,
-        image: imageUrl,
-        // Ensure address object is complete
-        address: {
-          village: form.address.village || "",
-          district: form.address.district || "",
-          state: form.address.state || "",
-        },
-        // goodWorks is now a string
-        goodWorks: form.goodWorks,
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
       };
 
-      console.log("Add Candidate payload:", dataToSend);
-
-      let response;
-      if (candidate) {
-        response = await api.patch(`/candidates/${candidate._id}`, dataToSend);
+      if (election) {
+        await api.patch(`/elections/${election._id}`, payload);
+        toast.success("Election updated");
       } else {
-        response = await api.post("/candidates", dataToSend);
+        await api.post("/elections", payload);
+        toast.success("Election created");
       }
-      onSuccess(response.data);
+
+      onSuccess();
       onClose();
-    } catch (error) {
-      console.error(
-        `Error ${candidate ? "updating" : "adding"} candidate:`,
-        error,
-      );
-      toast.error(`Error ${candidate ? "updating" : "adding"} candidate`);
+    } catch (err) {
+      toast.error("Failed to save election");
     } finally {
       setLoading(false);
     }
