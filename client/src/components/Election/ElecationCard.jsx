@@ -1,119 +1,103 @@
 import { useNavigate } from "react-router-dom";
 
-const ElectionCard = ({ election, isAdmin, onEdit, onDelete }) => {
+const ElectionCard = ({ election }) => {
   const navigate = useNavigate();
+
   const totalVotes = election.voters?.length || 0;
-  const totalCandidates = election.candidates?.length || 0;
-  const voterTurnout =
-    totalCandidates > 0 ? Math.round((totalVotes / totalCandidates) * 100) : 0;
+  const totalVoters = election.totalVoters || 896; // demo fallback
+  const turnoutPercent = Math.round((totalVotes / totalVoters) * 100);
 
   return (
     <div
-      className="bg-white rounded-2xl p-5 shadow space-y-4 cursor-pointer hover:shadow-lg transition"
       onClick={() => navigate(`/elections/${election._id}`)}
+      className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition cursor-pointer space-y-4 border"
     >
-      {/* THUMBNAIL IMAGE */}
-      {election.thumbnail && (
-        <img
-          src={election.thumbnail}
-          alt={election.title}
-          className="w-full h-32 object-cover rounded-lg mb-4"
-        />
-      )}
+      {/* HEADER */}
+      <div className="flex items-start gap-3">
+        {/* ICON */}
+        <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+          <img src="/bjp.png" alt="icon" className="w-7 h-7" />
+        </div>
 
-      {/* TITLE + STATUS */}
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold flex items-center gap-2">
-          {election.status === "LIVE" && (
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-          )}
-          <span className={election.status === "LIVE" ? "text-green-600" : ""}>
-            {election.title}
-          </span>
-        </h3>
+        {/* TITLE */}
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-gray-900">{election.title}</h3>
 
-        <span
-          className={`text-xs px-2 py-1 rounded ${
-            election.status === "LIVE"
-              ? "bg-green-100 text-green-600"
-              : "bg-gray-100 text-gray-500"
-          }`}
-        >
-          {election.status}
-        </span>
+            {election.status === "LIVE" && (
+              <span className="flex items-center gap-1 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                LIVE
+              </span>
+            )}
+          </div>
+
+          <p className="text-sm text-gray-500">{election.category}</p>
+        </div>
       </div>
 
-      {/* CATEGORY */}
-      <p className="text-sm text-gray-500">{election.category}</p>
-
-      {/* VOTER TURNOUT */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm">
-          Voter Turnout: <b>{voterTurnout}%</b>
+      {/* VOTES + BUTTON */}
+      <div className="flex items-center gap-3">
+        <p className="text-sm font-medium text-gray-700">
+          {totalVotes}/{totalVoters} votes cast
         </p>
-        <p className="text-sm text-gray-500">
-          {totalVotes}/{totalCandidates} votes
-        </p>
-      </div>
 
-      {/* TOP 3 CANDIDATES */}
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium">Top Candidates</h4>
-        {election.candidates?.length > 0 ? (
-          election.candidates.slice(0, 3).map((c) => (
-            <div key={c._id} className="flex items-center gap-3">
-              <img
-                src={c.image || "/logo.png"}
-                alt={c.fullName}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              <div className="flex-1">
-                <p className="text-sm font-medium">{c.fullName}</p>
-                <p className="text-xs text-gray-500">({c.party})</p>
-              </div>
-              <p className="text-sm font-semibold">{c.voteCount || 0} votes</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray-500">No candidates added yet</p>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center">
-        <p
-          className="text-indigo-600 text-sm cursor-pointer hover:underline"
+        <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/candidates?electionId=${election._id}`);
+            navigate(`/vote/${election._id}`);
           }}
+          className="ml-auto bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-1.5 rounded-lg"
         >
-          See all candidates →
-        </p>
-
-        {/* ACTIONS */}
-        {isAdmin && (
-          <div className="flex gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit();
-              }}
-              className="text-indigo-600 text-sm"
-            >
-              Edit
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-              className="text-red-600 text-sm"
-            >
-              Delete
-            </button>
-          </div>
-        )}
+          Vote Now
+        </button>
       </div>
+
+      {/* PROGRESS BAR */}
+      <div>
+        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-purple-600"
+            style={{ width: `${turnoutPercent}%` }}
+          ></div>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-1">
+          {turnoutPercent}% voter turnout
+        </p>
+      </div>
+
+      {/* CANDIDATES */}
+      <div className="space-y-3">
+        {election.candidates?.slice(0, 3).map((c) => (
+          <div key={c._id} className="flex items-center gap-3 text-sm">
+            <img
+              src={c.image || "/user.png"}
+              alt={c.fullName}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+
+            <div className="flex-1">
+              <p className="font-medium text-gray-800">
+                {c.fullName} ({c.party})
+              </p>
+            </div>
+
+            <span className="text-gray-400 text-lg">›</span>
+          </div>
+        ))}
+      </div>
+
+      {/* SEE ALL */}
+      <p
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/candidates?electionId=${election._id}`);
+        }}
+        className="text-sm text-indigo-600 hover:underline mt-2"
+      >
+        See all candidates →
+      </p>
     </div>
   );
 };

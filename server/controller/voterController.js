@@ -14,24 +14,25 @@ const registerVoterController = async (req, res, next) => {
       return next(new HttpError("Fill in all fields.", 422));
     }
 
-    const newEmail = email.toLowerCase();
+    const newEmail = email.toLowerCase().trim();
     const emailExists = await VoterModel.findOne({ email: newEmail });
     if (emailExists) {
       return next(new HttpError("Email already exists.", 422));
     }
 
-    if (password.trim().length < 6) {
+    const trimmedPassword = password.trim();
+    if (trimmedPassword.length < 6) {
       return next(
         new HttpError("Password must be at least 6 characters.", 422),
       );
     }
 
-    if (password !== password2) {
+    if (trimmedPassword !== password2.trim()) {
       return next(new HttpError("Passwords do not match.", 422));
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(trimmedPassword, salt);
 
     let isAdmin = false;
     if (newEmail === "admin@gmail.com") {
@@ -70,14 +71,14 @@ const loginVoterController = async (req, res, next) => {
     }
 
     const voter = await VoterModel.findOne({
-      email: email.toLowerCase(),
+      email: email.toLowerCase().trim(),
     }).select("+password"); // ⭐ MOST IMPORTANT LINE
 
     if (!voter) {
       return next(new HttpError("Invalid credentials.", 401));
     }
 
-    const isMatch = await bcrypt.compare(password, voter.password);
+    const isMatch = await bcrypt.compare(password.trim(), voter.password);
     if (!isMatch) {
       return next(new HttpError("Invalid credentials.", 401));
     }
