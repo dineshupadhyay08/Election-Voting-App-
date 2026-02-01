@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../store/axios.js";
 import { toast } from "react-toastify";
 
 const ElectionFormModal = ({ election, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
+  const [allCandidates, setAllCandidates] = useState([]);
+  const [selectedCandidates, setSelectedCandidates] = useState([]);
 
   const [form, setForm] = useState({
     title: election?.title || "",
@@ -12,7 +14,21 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
     thumbnail: election?.thumbnail || "",
     startDate: election?.startDate?.slice(0, 10) || "",
     endDate: election?.endDate?.slice(0, 10) || "",
+    candidates: election?.candidates || [],
   });
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const res = await api.get("/candidates");
+        setAllCandidates(res.data);
+        setSelectedCandidates(election?.candidates || []);
+      } catch (error) {
+        console.error("Error fetching candidates:", error);
+      }
+    };
+    fetchCandidates();
+  }, [election]);
 
   const handleSubmit = async () => {
     if (!form.title || !form.category || !form.startDate || !form.endDate) {
@@ -20,7 +36,11 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
       return;
     }
 
-    if (new Date(form.startDate) >= new Date(form.endDate)) {
+    // Fix date comparison by setting time to midnight to avoid timezone issues
+    const startDate = new Date(form.startDate + "T00:00:00");
+    const endDate = new Date(form.endDate + "T00:00:00");
+
+    if (startDate >= endDate) {
       toast.error("End date must be after start date");
       return;
     }
@@ -99,10 +119,41 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
         {/* END DATE */}
         <input
           type="date"
-          className="w-full border px-4 py-2 rounded-lg mb-5"
+          className="w-full border px-4 py-2 rounded-lg mb-3"
           value={form.endDate}
           onChange={(e) => setForm({ ...form, endDate: e.target.value })}
         />
+
+        {/* CANDIDATES */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Candidates
+          </label>
+          <div className="max-h-40 overflow-y-auto border rounded-lg p-3">
+            {allCandidates.map((candidate) => (
+              <label
+                key={candidate._id}
+                className="flex items-center gap-2 mb-2"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedCandidates.includes(candidate._id)}
+                  onChange={(e) => {
+                    const newSelected = e.target.checked
+                      ? [...selectedCandidates, candidate._id]
+                      : selectedCandidates.filter((id) => id !== candidate._id);
+                    setSelectedCandidates(newSelected);
+                    setForm({ ...form, candidates: newSelected });
+                  }}
+                  className="rounded"
+                />
+                <span className="text-sm">
+                  {candidate.fullName} ({candidate.party})
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
 
         {/* ACTIONS */}
         <div className="flex justify-end gap-3">

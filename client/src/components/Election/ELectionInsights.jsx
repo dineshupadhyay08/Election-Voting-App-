@@ -3,7 +3,7 @@ const ElectionInsights = ({ elections = [] }) => {
   const upcomingCount = elections.filter((e) => e.status === "UPCOMING").length;
   const totalVotes = elections.reduce(
     (sum, e) => sum + (e.voters?.length || 0),
-    0
+    0,
   );
 
   return (

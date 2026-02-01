@@ -4,8 +4,9 @@ const ElectionCard = ({ election }) => {
   const navigate = useNavigate();
 
   const totalVotes = election.voters?.length || 0;
-  const totalVoters = election.totalVoters || 896; // demo fallback
-  const turnoutPercent = Math.round((totalVotes / totalVoters) * 100);
+  const totalVoters = election.totalVoters || 896;
+  const turnoutPercent =
+    totalVoters > 0 ? Math.round((totalVotes / totalVoters) * 100) : 0;
 
   return (
     <div
@@ -14,9 +15,13 @@ const ElectionCard = ({ election }) => {
     >
       {/* HEADER */}
       <div className="flex items-start gap-3">
-        {/* ICON */}
-        <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-          <img src="/bjp.png" alt="icon" className="w-7 h-7" />
+        {/* ICON / THUMBNAIL */}
+        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+          <img
+            src={election.thumbnail || "/Register_vote_img.jpg"}
+            alt={election.title}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* TITLE */}
@@ -36,21 +41,23 @@ const ElectionCard = ({ election }) => {
         </div>
       </div>
 
-      {/* VOTES + BUTTON */}
+      {/* VOTES */}
       <div className="flex items-center gap-3">
         <p className="text-sm font-medium text-gray-700">
           {totalVotes}/{totalVoters} votes cast
         </p>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/vote/${election._id}`);
-          }}
-          className="ml-auto bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-1.5 rounded-lg"
-        >
-          Vote Now
-        </button>
+        {election.status === "LIVE" && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/elections/${election._id}`);
+            }}
+            className="ml-auto bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-1.5 rounded-lg"
+          >
+            Vote Now
+          </button>
+        )}
       </div>
 
       {/* PROGRESS BAR */}
@@ -67,9 +74,9 @@ const ElectionCard = ({ election }) => {
         </p>
       </div>
 
-      {/* CANDIDATES */}
-      <div className="space-y-3">
-        {election.candidates?.slice(0, 3).map((c) => (
+      {/* CANDIDATES PREVIEW */}
+      {Array.isArray(election.candidates) &&
+        election.candidates.slice(0, 2).map((c) => (
           <div key={c._id} className="flex items-center gap-3 text-sm">
             <img
               src={c.image || "/user.png"}
@@ -77,26 +84,21 @@ const ElectionCard = ({ election }) => {
               className="w-8 h-8 rounded-full object-cover"
             />
 
-            <div className="flex-1">
-              <p className="font-medium text-gray-800">
-                {c.fullName} ({c.party})
-              </p>
-            </div>
-
-            <span className="text-gray-400 text-lg">›</span>
+            <p className="font-medium text-gray-800">
+              {c.fullName} <span className="text-gray-500">({c.party})</span>
+            </p>
           </div>
         ))}
-      </div>
 
       {/* SEE ALL */}
       <p
         onClick={(e) => {
           e.stopPropagation();
-          navigate(`/candidates?electionId=${election._id}`);
+          navigate(`/elections/${election._id}`);
         }}
         className="text-sm text-indigo-600 hover:underline mt-2"
       >
-        See all candidates →
+        View election →
       </p>
     </div>
   );

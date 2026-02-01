@@ -19,6 +19,7 @@ const {
   updateElection,
   removeElection,
   getCandidatesOfElection,
+  getElectionAnalytics,
 } = require("../controller/electionController");
 
 const {
@@ -86,6 +87,14 @@ router.delete(
   authMiddleware,
   adminMiddleware,
   removeElection,
+);
+
+/* 👑 ADMIN – ELECTION ANALYTICS */
+router.get(
+  "/elections/:id/analytics",
+  authMiddleware,
+  adminMiddleware,
+  getElectionAnalytics,
 );
 
 /* ======================================================

@@ -46,6 +46,7 @@ const Elections = () => {
 
   const ongoing = modifiedElections.filter((e) => e.status === "LIVE");
   const upcoming = modifiedElections.filter((e) => e.status === "UPCOMING");
+  const completed = modifiedElections.filter((e) => e.status === "COMPLETED");
 
   return (
     <div className="space-y-6">
@@ -66,10 +67,6 @@ const Elections = () => {
                 Add Election
               </button>
             )}
-
-            <button className="border rounded-lg px-4 py-2 text-sm text-gray-600">
-              Filters ▾
-            </button>
           </div>
         </div>
 
@@ -85,10 +82,6 @@ const Elections = () => {
               <option value="WARD">Ward</option>
               <option value="ASSEMBLY">Assembly</option>
               <option value="LOK_SABHA">Lok Sabha</option>
-            </select>
-
-            <select className="border rounded-lg px-4 py-2 text-sm">
-              <option>Any Date</option>
             </select>
 
             <select
@@ -138,10 +131,40 @@ const Elections = () => {
             </div>
           </div>
 
-          <div>
-            <h2 className="font-semibold text-lg mb-4">Upcoming Elections</h2>
+          {/* UPCOMING ELECTIONS */}
+          <div className="space-y-4">
+            <h2 className="font-semibold text-lg sm:text-xl">
+              Upcoming Elections
+            </h2>
+
+            {upcoming.length === 0 ? (
+              <p className="text-sm text-gray-500">No upcoming elections.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                {upcoming.map((e) => (
+                  <UpcomingElectionCard
+                    key={e._id}
+                    election={e}
+                    isAdmin={isAdmin}
+                    onEdit={() => {
+                      setEditElection(e);
+                      setShowModal(true);
+                    }}
+                    onDelete={() => {
+                      if (window.confirm(`Delete election "${e.title}"?`)) {
+                        api.delete(`/elections/${e._id}`).then(fetchElections);
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* <div>
+            <h2 className="font-semibold text-lg mb-4">Completed Elections</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {upcoming.map((e) => (
+              {completed.map((e) => (
                 <UpcomingElectionCard
                   key={e._id}
                   election={e}
@@ -160,12 +183,12 @@ const Elections = () => {
                 />
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
 
-        <div className="order-last lg:order-none">
+        {/* <div className="order-last lg:order-none">
           <ElectionInsights />
-        </div>
+        </div> */}
       </div>
 
       {showModal && (

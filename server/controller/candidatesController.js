@@ -230,16 +230,55 @@ const getParties = async (req, res, next) => {
 ================================ */
 const voteCandidates = async (req, res, next) => {
   try {
-    const candidate = await Candidate.findById(req.params.id);
+    const candidate = await Candidate.findById(req.params.id).populate(
+      "election",
+    );
     if (!candidate) {
       return next(new HttpError("Candidate not found", 404));
     }
 
+    const election = candidate.election;
+    if (!election) {
+      return next(new HttpError("Election not found for this candidate", 404));
+    }
+
+    if (election.status !== "LIVE") {
+      return next(
+        new HttpError("Voting is only allowed for LIVE elections", 403),
+      );
+    }
+
+    // Check if user has already voted in this election
+    const Voter = require("../model/voterModel");
+    const voter = await Voter.findById(req.user.id);
+    if (!voter) {
+      return next(new HttpError("Voter not found", 404));
+    }
+
+    if (voter.votedElections.includes(election._id)) {
+      return next(
+        new HttpError("You have already voted in this election", 403),
+      );
+    }
+
+    // Record the vote
     candidate.voteCount += 1;
     await candidate.save();
 
-    res.json({ message: "Vote recorded", votes: candidate.voteCount });
+    // Add voter to election's voters array
+    election.voters.push(voter._id);
+    await election.save();
+
+    // Add election to voter's votedElections
+    voter.votedElections.push(election._id);
+    await voter.save();
+
+    res.json({
+      message: "Vote recorded successfully",
+      votes: candidate.voteCount,
+    });
   } catch (error) {
+    console.error("VOTING ERROR:", error);
     next(new HttpError("Voting failed", 500));
   }
 };

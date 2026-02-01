@@ -1,21 +1,28 @@
 const Election = require("../model/electionModel");
 const HttpError = require("../middleware/HttpError");
+const Candidate = require("../model/candidatesModel");
 
 /* ================================
    ADD NEW ELECTION (ADMIN)
 ================================ */
 const addElection = async (req, res, next) => {
   try {
-    const { title, description, category, thumbnail, startDate, endDate } =
-      req.body;
+    const {
+      title,
+      description,
+      category,
+      thumbnail,
+      startDate,
+      endDate,
+      candidates = [],
+    } = req.body;
 
-    // 🔴 Required field checks
     if (!title || !category || !startDate || !endDate) {
       return next(
         new HttpError(
           "Title, category, start date and end date are required",
-          422
-        )
+          422,
+        ),
       );
     }
 
@@ -30,7 +37,16 @@ const addElection = async (req, res, next) => {
       thumbnail,
       startDate,
       endDate,
+      candidates,
     });
+
+    // 🔥 MAIN FIX: link candidates → election
+    if (candidates.length > 0) {
+      await Candidate.updateMany(
+        { _id: { $in: candidates } },
+        { election: election._id },
+      );
+    }
 
     res.status(201).json(election);
   } catch (error) {
@@ -49,15 +65,24 @@ const getElectionVoters = async (req, res, next) => {
 
     const query = { isActive: true };
 
-    if (category) query.category = category;
-    if (status) query.status = status;
+    if (category) {
+      query.category = category;
+    }
+
+    // 🔥 IMPORTANT: ignore ALL status
+    if (status && status !== "ALL") {
+      query.status = status;
+    }
 
     let sortOption = { createdAt: -1 };
     if (sort === "ENDING_SOON") {
       sortOption = { endDate: 1 };
     }
 
-    const elections = await Election.find(query).sort(sortOption);
+    const elections = await Election.find(query)
+      // 🔥 THIS IS THE KEY FIX
+      .populate("candidates", "fullName party image")
+      .sort(sortOption);
 
     res.json(elections);
   } catch (error) {
@@ -90,7 +115,6 @@ const getElections = async (req, res, next) => {
 const updateElection = async (req, res, next) => {
   try {
     const election = await Election.findById(req.params.id);
-
     if (!election) {
       return next(new HttpError("Election not found", 404));
     }
@@ -103,6 +127,7 @@ const updateElection = async (req, res, next) => {
       startDate,
       endDate,
       isActive,
+      candidates,
     } = req.body;
 
     if (title !== undefined) election.title = title;
@@ -113,8 +138,23 @@ const updateElection = async (req, res, next) => {
     if (endDate !== undefined) election.endDate = endDate;
     if (isActive !== undefined) election.isActive = isActive;
 
-    await election.save(); // status auto-update via schema hook
+    if (candidates !== undefined) {
+      election.candidates = candidates;
 
+      // 🔥 unlink old candidates
+      await Candidate.updateMany(
+        { election: election._id },
+        { $unset: { election: "" } },
+      );
+
+      // 🔥 link new candidates
+      await Candidate.updateMany(
+        { _id: { $in: candidates } },
+        { election: election._id },
+      );
+    }
+
+    await election.save();
     res.json(election);
   } catch (error) {
     console.error("UPDATE ELECTION ERROR:", error);
@@ -145,18 +185,53 @@ const removeElection = async (req, res, next) => {
 ================================ */
 const getCandidatesOfElection = async (req, res, next) => {
   try {
+    const candidates = await Candidate.find({
+      election: req.params.id,
+    });
+
+    res.json(candidates);
+  } catch (error) {
+    console.error("FETCH CANDIDATES ERROR:", error);
+    next(new HttpError("Fetching candidates failed", 500));
+  }
+};
+
+/* ================================
+   GET ELECTION ANALYTICS (ADMIN)
+================================ */
+const getElectionAnalytics = async (req, res, next) => {
+  try {
     const election = await Election.findById(req.params.id).populate(
-      "candidates"
+      "candidates",
     );
 
     if (!election) {
       return next(new HttpError("Election not found", 404));
     }
 
-    res.json(election.candidates || []);
+    const totalVotes = election.candidates.reduce(
+      (sum, c) => sum + (c.voteCount || 0),
+      0,
+    );
+    const candidateAnalytics = election.candidates.map((c) => ({
+      id: c._id,
+      name: c.fullName,
+      party: c.party,
+      votes: c.voteCount || 0,
+    }));
+
+    res.json({
+      election: {
+        id: election._id,
+        title: election.title,
+        totalVotes,
+        totalVoters: election.voters.length,
+      },
+      candidates: candidateAnalytics,
+    });
   } catch (error) {
-    console.error("FETCH CANDIDATES ERROR:", error);
-    next(new HttpError("Fetching candidates failed", 500));
+    console.error("GET ELECTION ANALYTICS ERROR:", error);
+    next(new HttpError("Fetching analytics failed", 500));
   }
 };
 
@@ -167,4 +242,5 @@ module.exports = {
   updateElection,
   removeElection,
   getCandidatesOfElection,
+  getElectionAnalytics,
 };
