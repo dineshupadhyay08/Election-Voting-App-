@@ -56,7 +56,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ---
 
-## 🛠️ Tech Stack.
+## 🛠️ Tech Stack
 
 ### Frontend
 - React.js
