@@ -4,14 +4,15 @@ import { Home, Vote, History, User, X, Flag } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
+import MobileBottomNav from "./MobileBottomNav";
 
 const PublicLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FB] relative">
-      {/* ================= DESKTOP SIDEBAR ================= */}
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#F6F8FB] relative">
+      {/* ================= SIDEBAR ================= */}
       <Sidebar />
 
       {/* ================= MOBILE SIDEBAR DRAWER ================= */}
@@ -153,6 +154,9 @@ const PublicLayout = () => {
 
         {/* <Footer /> */}
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };

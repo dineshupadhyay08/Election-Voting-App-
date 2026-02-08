@@ -13,8 +13,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   return (
-    // 👇 hide sidebar on mobile
-    <aside className="hidden md:block h-screen w-56 bg-white border-r border-gray-200 sticky top-0">
+    <aside className="w-full md:w-56 h-auto md:h-screen bg-white border-b md:border-r border-gray-200 sticky top-0 z-10">
       {/* Logo */}
       <div className="flex items-center justify-center px-2 py-2 border-b border-gray-200 cursor-pointer">
         <img
@@ -26,7 +25,7 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="mt-6 space-y-3 px-2">
+      <nav className="mt-6 space-y-3 px-2 flex flex-wrap md:flex-col justify-center md:justify-start">
         <NavLink to="/" className={linkClass}>
           <Home size={18} /> Home
         </NavLink>
