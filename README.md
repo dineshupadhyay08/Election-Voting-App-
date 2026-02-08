@@ -31,7 +31,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ---
 
-### 🧑‍💼 Candidates
+### 🧑‍💼 Candidates.
 - Add candidates under a specific election (Admin)
 - View all candidates
 - Candidate profile with personal & political details
@@ -56,7 +56,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ---
 
-## 🛠️ Tech Stack.
+## 🛠️ Tech Stack
 
 ### Frontend
 - React.js
