@@ -37,7 +37,7 @@ const addElection = async (req, res, next) => {
       thumbnail,
       startDate,
       endDate,
-      candidates,
+      candidates: [...new Set(candidates)],
     });
 
     // 🔥 MAIN FIX: link candidates → election
@@ -139,7 +139,7 @@ const updateElection = async (req, res, next) => {
     if (isActive !== undefined) election.isActive = isActive;
 
     if (candidates !== undefined) {
-      election.candidates = candidates;
+      election.candidates = [...new Set(candidates)];
 
       // 🔥 unlink old candidates
       await Candidate.updateMany(

@@ -151,7 +151,7 @@ const PublicLayout = () => {
           <Outlet />
         </main>
 
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );

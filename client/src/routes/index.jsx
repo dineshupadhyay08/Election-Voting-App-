@@ -30,7 +30,7 @@ const router = createBrowserRouter([
           { path: "/elections/:id", element: <ElectionDetails /> },
           { path: "/candidates", element: <Candidates /> },
           { path: "/candidates/:id", element: <CandidateDetails /> },
-          { path: "/party", element: <Party /> },
+          // { path: "/party", element: <Party /> },
           { path: "/poll-history", element: <PollHistory /> },
           { path: "/profile", element: <Profile /> },
         ],

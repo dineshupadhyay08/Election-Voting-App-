@@ -22,7 +22,7 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
       try {
         const res = await api.get("/candidates");
         setAllCandidates(res.data);
-        setSelectedCandidates(election?.candidates || []);
+        setSelectedCandidates([...new Set(election?.candidates || [])]);
       } catch (error) {
         console.error("Error fetching candidates:", error);
       }
@@ -140,7 +140,7 @@ const ElectionFormModal = ({ election, onClose, onSuccess }) => {
                   checked={selectedCandidates.includes(candidate._id)}
                   onChange={(e) => {
                     const newSelected = e.target.checked
-                      ? [...selectedCandidates, candidate._id]
+                      ? [...new Set([...selectedCandidates, candidate._id])]
                       : selectedCandidates.filter((id) => id !== candidate._id);
                     setSelectedCandidates(newSelected);
                     setForm({ ...form, candidates: newSelected });

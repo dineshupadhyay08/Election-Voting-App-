@@ -20,6 +20,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     if (!token) {
+      console.log("No token provided. Cookies:", req.cookies);
       return next(
         new HttpError("Authentication required. No token provided.", 401),
       );
@@ -28,14 +29,12 @@ const authMiddleware = (req, res, next) => {
     const secret =
       process.env.JWT_SECRET || "default_secret_key_change_in_production";
     const decoded = jwt.verify(token, secret);
-    // console.log("JWT DECODED:", decoded);
+    console.log("JWT DECODED:", decoded);
     req.user = decoded;
 
     next();
-    // console.log("Cookies received:", req.cookies);
-    // console.log("AUTH USER:", req.user);
-    // console.log("COOKIES:", req.cookies);
   } catch (err) {
+    console.log("Auth error:", err.message);
     return next(new HttpError("Authentication failed.", 401));
   }
 };

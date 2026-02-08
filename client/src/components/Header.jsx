@@ -39,7 +39,7 @@ const Header = ({ onMenuClick }) => {
         </div>
 
         <div className="flex items-center gap-5">
-          <div
+          {/* <div
             className="relative cursor-pointer"
             onClick={handleNotificationClick}
           >
@@ -49,7 +49,7 @@ const Header = ({ onMenuClick }) => {
               isOpen={showNotifications}
               onClose={() => setShowNotifications(false)}
             />
-          </div>
+          </div> */}
 
           <User
             className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"

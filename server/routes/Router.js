@@ -127,6 +127,9 @@ router.get("/candidates/:id", authMiddleware, getCandidate);
 /* 🔐 USER – VOTE */
 router.patch("/candidates/:id/vote", authMiddleware, voteCandidates);
 
+/* 🔐 USER – GET PARTIES */
+router.get("/parties", authMiddleware, getParties);
+
 /* ================================
    UPLOAD ROUTE
 ================================ */

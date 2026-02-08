@@ -10,17 +10,15 @@ const errorHandler = (error, req, res, next) => {
   }
 
   res.status(error.statusCode || 500).json({
-    message: error.message || "An unknown error occurred."
+    message: error.message || "An unknown error occurred.",
   });
 };
 
 class HttpError extends Error {
-    constructor(message, statusCode) {
-        super(message);
-        this.statusCode = statusCode;
-    }
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+  }
 }
 
-module.exports = HttpError;
-
-module.exports = { notFound, errorHandler, };
+module.exports = { notFound, errorHandler, HttpError };

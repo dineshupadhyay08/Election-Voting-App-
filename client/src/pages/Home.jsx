@@ -10,7 +10,7 @@ const Home = () => {
         <AssemblyElectionCard />
 
         {/* Parties & Candidates */}
-        <PartiesCandidates />
+        {/* <PartiesCandidates /> */}
 
         {/* Things to know */}
         <div>
@@ -52,9 +52,7 @@ const Home = () => {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="order-last lg:order-none">
-        <LatestUpdates />
-      </div>
+      <div className="order-last lg:order-none">{/* <LatestUpdates /> */}</div>
     </div>
   );
 };
