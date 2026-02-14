@@ -7,6 +7,8 @@ const fileUpload = require("express-fileupload");
 const {
   registerVoterController,
   loginVoterController,
+  refreshTokenController,
+  logoutController,
   getVoterController,
   getMyProfileController,
   updateVoterController,
@@ -37,14 +39,17 @@ const {
 ========================= */
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const { authLimiter } = require("../middleware/rateLimiter");
 
 const router = Router();
 
 /* ======================================================
-   AUTH ROUTES (PUBLIC)
+   AUTH ROUTES (PUBLIC) - With Rate Limiting
 ====================================================== */
-router.post("/voters/register", registerVoterController);
-router.post("/voters/login", loginVoterController);
+router.post("/voters/register", authLimiter, registerVoterController);
+router.post("/voters/login", authLimiter, loginVoterController);
+router.post("/voters/refresh-token", refreshTokenController);
+router.post("/voters/logout", logoutController);
 
 /* ======================================================
    VOTER ROUTES (PROTECTED)

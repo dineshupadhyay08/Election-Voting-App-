@@ -1,5 +1,8 @@
+const mongoose = require("mongoose");
 const Candidate = require("../model/candidatesModel.js");
 const Election = require("../model/electionModel.js");
+const Vote = require("../model/voteModel.js");
+const Voter = require("../model/voterModel.js");
 const HttpError = require("../middleware/HttpError.js");
 
 /* ================================

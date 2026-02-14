@@ -8,20 +8,28 @@ const cookieParser = require("cookie-parser");
 
 const Routes = require("./routes/Router.js");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware.js");
+const { generalLimiter, authLimiter } = require("./middleware/rateLimiter.js");
 
 const app = express();
 app.use(cookieParser());
 
 // Body parsing
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // Allow both Vite and potential React dev server
-    credentials: true,
-  }),
-);
+
+// SECURITY: Improve CORS settings for production
+const corsOptions = {
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(upload({ useTempFiles: true }));
+
+// SECURITY: Apply general rate limiting
+app.use("/api", generalLimiter);
 
 // Routes
 app.use("/api", Routes);

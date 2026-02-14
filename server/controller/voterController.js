@@ -4,6 +4,40 @@ const jwt = require("jsonwebtoken");
 const VoterModel = require("../model/voterModel.js");
 const HttpError = require("../middleware/HttpError.js");
 
+// Token generation functions
+const generateAccessToken = (payload) => {
+  const secret =
+    process.env.JWT_SECRET || "default_secret_key_change_in_production";
+  return jwt.sign(payload, secret, { expiresIn: "15m" });
+};
+
+const generateRefreshToken = (payload) => {
+  const secret =
+    process.env.JWT_REFRESH_SECRET ||
+    "default_refresh_secret_change_in_production";
+  return jwt.sign(payload, secret, { expiresIn: "7d" });
+};
+
+// Validate password strength
+const validatePassword = (password) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (password.length < minLength)
+    return "Password must be at least 8 characters long";
+  if (!hasUpperCase)
+    return "Password must contain at least one uppercase letter";
+  if (!hasLowerCase)
+    return "Password must contain at least one lowercase letter";
+  if (!hasNumber) return "Password must contain at least one number";
+  if (!hasSpecialChar)
+    return "Password must contain at least one special character";
+  return null;
+};
+
 //*******REGISTER NEW VOTER********* */
 
 const registerVoterController = async (req, res, next) => {
@@ -21,23 +55,19 @@ const registerVoterController = async (req, res, next) => {
     }
 
     const trimmedPassword = password.trim();
-    if (trimmedPassword.length < 6) {
-      return next(
-        new HttpError("Password must be at least 6 characters.", 422),
-      );
+    const passwordError = validatePassword(trimmedPassword);
+    if (passwordError) {
+      return next(new HttpError(passwordError, 422));
     }
 
     if (trimmedPassword !== password2.trim()) {
       return next(new HttpError("Passwords do not match.", 422));
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(trimmedPassword, salt);
 
-    let isAdmin = false;
-    if (newEmail === "admin@gmail.com") {
-      isAdmin = true;
-    }
+    const isAdmin = false;
 
     await VoterModel.create({
       fullName,
@@ -47,18 +77,13 @@ const registerVoterController = async (req, res, next) => {
       isAdmin,
     });
 
-    res.status(201).json(`New Voter ${fullName} created.`);
+    res
+      .status(201)
+      .json({ success: true, message: `New Voter ${fullName} created.` });
   } catch (error) {
     console.log(error);
     return next(new HttpError("Voter register failed.", 422));
   }
-};
-
-const generateToken = (payload) => {
-  const secret =
-    process.env.JWT_SECRET || "default_secret_key_change_in_production";
-  const token = jwt.sign(payload, secret, { expiresIn: "1d" });
-  return token;
 };
 
 //******* LOGIN VOTER *********//
@@ -72,7 +97,7 @@ const loginVoterController = async (req, res, next) => {
 
     const voter = await VoterModel.findOne({
       email: email.toLowerCase().trim(),
-    }).select("+password"); // ⭐ MOST IMPORTANT LINE
+    }).select("+password");
 
     if (!voter) {
       return next(new HttpError("Invalid credentials.", 401));
@@ -84,29 +109,78 @@ const loginVoterController = async (req, res, next) => {
     }
 
     const { _id: id, isAdmin, votedElections } = voter;
-    const token = generateToken({ id, isAdmin });
+    const accessToken = generateAccessToken({ id, isAdmin });
+    const refreshToken = generateRefreshToken({ id, isAdmin });
+
+    const isProduction = process.env.NODE_ENV === "production";
 
     res
-      .cookie("token", token, {
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: false,
-        maxAge: 24 * 60 * 60 * 1000,
+        secure: isProduction,
+        sameSite: isProduction ? "strict" : "lax",
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "strict" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
+        success: true,
         id,
         isAdmin,
         votedElections,
+        accessToken,
       });
-    console.log("LOGIN BODY:", req.body);
-    console.log(voter);
   } catch (err) {
     console.log("Login error:", err);
     return next(new HttpError("Login failed. Try again later.", 500));
   }
 };
 
-module.exports = { loginVoterController };
+//******* REFRESH TOKEN *********//
+const refreshTokenController = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!refreshToken) {
+      return next(new HttpError("Refresh token required.", 401));
+    }
+
+    const secret =
+      process.env.JWT_REFRESH_SECRET ||
+      "default_refresh_secret_change_in_production";
+    const decoded = jwt.verify(refreshToken, secret);
+
+    const voter = await VoterModel.findById(decoded.id);
+    if (!voter) {
+      return next(new HttpError("User not found.", 404));
+    }
+
+    const accessToken = generateAccessToken({
+      id: voter._id,
+      isAdmin: voter.isAdmin,
+    });
+
+    res.json({ success: true, accessToken });
+  } catch (err) {
+    return next(new HttpError("Invalid refresh token.", 401));
+  }
+};
+
+//******* LOGOUT *********//
+const logoutController = async (req, res, next) => {
+  try {
+    res
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+      .json({ success: true, message: "Logged out successfully" });
+  } catch (err) {
+    return next(new HttpError("Logout failed.", 500));
+  }
+};
 
 //******* GET VOTER PROFILE *********//
 
@@ -190,6 +264,8 @@ const updateVoterController = async (req, res, next) => {
 module.exports = {
   registerVoterController,
   loginVoterController,
+  refreshTokenController,
+  logoutController,
   getVoterController,
   getMyProfileController,
   updateVoterController,
