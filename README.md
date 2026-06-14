@@ -131,7 +131,7 @@ cd Election-Voting-App
 2️⃣ Backend setup
 ---
 ```
-	cd server bb
+	cd server
 	npm install
 	npm run dev
 ``````
