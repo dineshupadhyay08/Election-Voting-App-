@@ -5,9 +5,6 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ---
 
-ak
-
-
 ## 🚀 Features
 
 ### 👤 Authentication & Authorization
