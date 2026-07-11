@@ -3,7 +3,7 @@
 A full-stack **Election Voting System** built with the **MERN stack**, designed to simulate a real-world digital voting platform.  
 The project focuses on **role-based access (Admin / Voter)**, **secure authentication**, and a **dashboard-style UI**.
 
----     asdf;lkj
+---     asdf
 
 ## 🚀 Features
 
