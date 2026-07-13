@@ -7,10 +7,12 @@ const fileUpload = require("express-fileupload");
 const {
   registerVoterController,
   loginVoterController,
+  logoutVoterController,
   getVoterController,
   getMyProfileController,
   updateVoterController,
 } = require("../controller/voterController");
+const { getDashboardOverview } = require("../controller/dashboardController");
 
 const {
   addElection,
@@ -45,6 +47,7 @@ const router = Router();
 ====================================================== */
 router.post("/voters/register", registerVoterController);
 router.post("/voters/login", loginVoterController);
+router.post("/voters/logout", logoutVoterController);
 
 /* ======================================================
    VOTER ROUTES (PROTECTED)
@@ -52,6 +55,7 @@ router.post("/voters/login", loginVoterController);
 router.get("/voters/me", authMiddleware, getMyProfileController);
 router.put("/voters/update", authMiddleware, updateVoterController);
 router.get("/voters/:id", authMiddleware, getVoterController);
+router.get("/dashboard/overview", authMiddleware, getDashboardOverview);
 
 /* ======================================================
    ELECTION ROUTES
