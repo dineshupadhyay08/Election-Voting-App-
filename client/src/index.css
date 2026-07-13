@@ -1,192 +1,222 @@
 @import "tailwindcss";
 
-/* :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  color-scheme: dark;
+  --app-bg: #020617;
+  --surface: rgba(15, 23, 42, 0.82);
+  --surface-2: rgba(15, 23, 42, 0.66);
+  --surface-3: rgba(30, 41, 59, 0.72);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-soft: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(34, 211, 238, 0.28);
+  --accent-soft: rgba(34, 211, 238, 0.14);
+  --accent-strong: #67e8f9;
+  --shadow-soft: 0 22px 50px rgba(2, 6, 23, 0.22);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+:root[data-theme="light"] {
+  color-scheme: light;
+  --app-bg: #edf2ff;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-2: rgba(248, 250, 252, 0.9);
+  --surface-3: rgba(226, 232, 240, 0.7);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-soft: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(79, 70, 229, 0.22);
+  --accent-soft: rgba(99, 102, 241, 0.12);
+  --accent-strong: #4338ca;
+  --shadow-soft: 0 24px 60px rgba(99, 102, 241, 0.08);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
-
-.input-ui {
-  @apply w-full px-4 py-3 rounded-xl border border-indigo-300 
-  focus:outline-none focus:ring-2 focus:ring-indigo-400;
-}
-
-.icon-ui {
-  @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-500;
-}
-
-/* =========================
-   GLOBAL RESET
-========================= */
 * {
   box-sizing: border-box;
 }
 
-html,
+html {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.18), transparent 30%),
+    var(--app-bg);
+}
+
 body {
-  width: 100%;
-  overflow-x: hidden;
+  margin: 0;
+  min-width: 320px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: "Segoe UI", "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* =========================
-   MOBILE-FIRST BASE
-========================= */
-body {
-  font-size: 14px;
+a,
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-/* =========================
-   SIDEBAR CONTROL
-========================= */
-/* Mobile: hide sidebar */
-@media (max-width: 768px) {
-  .sidebar,
-  aside {
-    display: none !important;
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.input-ui {
+  @apply w-full rounded-2xl border px-4 py-3 outline-none transition;
+  border-color: var(--border-soft);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.input-ui::placeholder {
+  color: var(--text-muted);
+}
+
+.input-ui:focus {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08);
+}
+
+.icon-ui {
+  @apply absolute right-3 top-1/2 -translate-y-1/2;
+  color: var(--text-muted);
+}
+
+.dashboard-card {
+  @apply rounded-[32px] border p-5 sm:p-6;
+  border-color: var(--border-soft);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.dashboard-card-glow {
+  background:
+    radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+    var(--surface);
+}
+
+.dashboard-hero {
+  @apply grid gap-6 overflow-hidden rounded-[32px] border p-6 sm:p-8;
+  border-color: var(--border-soft);
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 30%),
+    radial-gradient(circle at right, rgba(99, 102, 241, 0.2), transparent 28%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.72));
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+:root[data-theme="light"] .dashboard-hero {
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
+    radial-gradient(circle at right, rgba(79, 70, 229, 0.18), transparent 28%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9));
+}
+
+.dashboard-label {
+  @apply text-xs font-semibold uppercase tracking-[0.26em];
+  color: var(--text-muted);
+}
+
+.dashboard-metric-tile {
+  @apply rounded-[28px] border p-4;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dashboard-icon-wrap {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.dashboard-primary-button {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition;
+  background: linear-gradient(135deg, #0ea5e9, #4f46e5);
+  color: white;
+  box-shadow: 0 18px 36px rgba(14, 165, 233, 0.24);
+}
+
+.dashboard-primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.dashboard-secondary-button,
+.dashboard-inline-button,
+.dashboard-icon-button {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition;
+  border-color: var(--border-soft);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.dashboard-icon-button {
+  @apply h-11 w-11 px-0;
+}
+
+.dashboard-inline-button:hover,
+.dashboard-secondary-button:hover,
+.dashboard-icon-button:hover {
+  background: var(--surface-3);
+}
+
+.dashboard-empty-state {
+  @apply flex min-h-[260px] flex-col items-center justify-center rounded-[28px] border px-6 py-8 text-center;
+  border-color: var(--border-soft);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.dashboard-skeleton {
+  @apply rounded-[32px];
+  background:
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 20%,
+      rgba(148, 163, 184, 0.16) 36%,
+      rgba(148, 163, 184, 0.08) 52%
+    ),
+    var(--surface);
+  background-size: 200% 100%;
+  animation: dashboardPulse 1.8s linear infinite;
+}
+
+@keyframes dashboardPulse {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
   }
 }
 
-/* =========================
-   HEADER FIX
-========================= */
-@media (max-width: 768px) {
-  header {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+@media (max-width: 1024px) {
+  .dashboard-card,
+  .dashboard-hero {
+    border-radius: 28px;
   }
 }
 
-/* =========================
-   MAIN CONTENT FIX
-========================= */
-@media (max-width: 768px) {
-  main {
-    padding: 1rem !important;
-  }
-}
-
-/* =========================
-   GRID NORMALIZATION
-========================= */
-/* Force cards to feel stacked */
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* =========================
-   CARD BEHAVIOUR
-========================= */
-@media (max-width: 768px) {
-  .rounded-xl,
-  .rounded-2xl {
-    border-radius: 14px;
-  }
-
-  .shadow,
-  .shadow-md {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-  }
-}
-
-/* =========================
-   BUTTON UX
-========================= */
-@media (max-width: 768px) {
-  button {
-    min-height: 42px;
+@media (max-width: 640px) {
+  body {
     font-size: 14px;
   }
-}
-
-/* =========================
-   IMAGE FIX
-========================= */
-img {
-  max-width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-/* =========================
-   TABLE / OVERFLOW SAFETY
-========================= */
-@media (max-width: 768px) {
-  table {
-    display: block;
-    overflow-x: auto;
-  }
-}
-
-/* =========================
-   TOUCH IMPROVEMENTS
-========================= */
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
 }
