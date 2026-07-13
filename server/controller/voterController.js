@@ -106,7 +106,15 @@ const loginVoterController = async (req, res, next) => {
   }
 };
 
-module.exports = { loginVoterController };
+const logoutVoterController = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+
+  res.status(200).json({ message: "Logged out successfully" });
+};
 
 //******* GET VOTER PROFILE *********//
 
@@ -190,6 +198,7 @@ const updateVoterController = async (req, res, next) => {
 module.exports = {
   registerVoterController,
   loginVoterController,
+  logoutVoterController,
   getVoterController,
   getMyProfileController,
   updateVoterController,
