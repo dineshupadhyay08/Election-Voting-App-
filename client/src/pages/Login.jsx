@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import api from "../store/axios";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({
     email: "",
@@ -29,8 +32,9 @@ const Login = () => {
 
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("isAdmin", res.data.isAdmin);
+      await queryClient.invalidateQueries({ queryKey: ["auth"] });
 
-      navigate("/");
+      navigate(location.state?.from?.pathname || "/");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
