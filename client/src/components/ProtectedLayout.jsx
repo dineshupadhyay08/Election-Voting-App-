@@ -1,30 +1,29 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
-import api from "../store/axios";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const ProtectedLayout = () => {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  const location = useLocation();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await api.get("/voters/me"); // cookie auto send hogi
-        setAuthenticated(true);
-      } catch (err) {
-        setAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--app-bg)] px-6 text-[var(--text-primary)]">
+        <div className="dashboard-card max-w-md text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+            <ShieldCheck size={28} />
+          </div>
+          <h1 className="mt-6 text-2xl font-semibold">Securing your dashboard</h1>
+          <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
+            Verifying your session and preparing the election workspace.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-    checkAuth();
-  }, []);
-
-  if (loading) return null; // ya loader
-
-  if (!authenticated) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return <Outlet />;
