@@ -5,7 +5,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 
 ---
 
-## 🚀 Features and benefits in the
+## 🚀 Features and benefit
 
 ### 👤 Authentication & Authorization
 - Secure login & registration using **JWT (Cookie-based auth)**
