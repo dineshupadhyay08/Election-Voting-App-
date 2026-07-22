@@ -21,7 +21,7 @@ app.use(
   }),
 );
 app.use(express.urlencoded({ extended: true }));
-app.use(upload({ useTempFiles:  }));
+app.use(upload({ useTempFiles: true }));
 
 // Routes
 app.use("/api", Routes);
