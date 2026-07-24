@@ -16,7 +16,6 @@ const errorHandler = (error, req, res, next) => {
 
 class HttpError extends Error {
   constructor(message, statusCode) {
-    super(message);
     this.statusCode = statusCode;
   }
 }
