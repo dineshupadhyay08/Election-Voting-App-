@@ -20,7 +20,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     if (!token) {
-      console.log("No token provided. Cookies:", req.cookies);
+      // console.log("No token provided. Cookies:", req.cookies);
       return next(
         new HttpError("Authentication required. No token provided.", 401),
       );
