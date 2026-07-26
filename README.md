@@ -188,7 +188,7 @@ PATCH	/candidates/:id		---(Vote for a candidate)
 
 ## 👨‍💻 Author
 
-**Dinesh Upadhyay**  dinesh upadhyay
+**Dinesh Upadhyay**  dinesh 
 
 - GitHub: https://github.com/dineshupadhyay08
 - Portfolio: https://dinesh-upadhyay-portfolio-jbh1.vercel.app/
