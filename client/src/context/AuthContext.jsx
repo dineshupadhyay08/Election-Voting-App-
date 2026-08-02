@@ -1,54 +1,64 @@
-import { createContext, useContext, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "../store/axios";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { api } from "../lib/axios";
 
-const AuthContext = createContext(null);
-
-const getProfile = async () => {
-  const { data } = await api.get("/voters/me");
-  return data;
-};
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const queryClient = useQueryClient();
-  const authQuery = useQuery({
-    queryKey: ["auth", "profile"],
-    queryFn: getProfile,
-    retry: false,
-    staleTime: 60 * 1000,
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const value = useMemo(
-    () => ({
-      user: authQuery.data || null,
-      isAuthenticated: Boolean(authQuery.data),
-      isLoading: authQuery.isLoading,
-      isError: authQuery.isError,
-      refreshAuth: () => queryClient.invalidateQueries({ queryKey: ["auth"] }),
-      logout: async () => {
-        try {
-          await api.post("/voters/logout");
-        } catch {
-          // Ignore logout API failures and clear client state anyway.
-        } finally {
-          window.localStorage.removeItem("userId");
-          window.localStorage.removeItem("isAdmin");
-          queryClient.setQueryData(["auth", "profile"], null);
-        }
-      },
-    }),
-    [authQuery.data, authQuery.isError, authQuery.isLoading, queryClient],
+  const fetchCurrentUser = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/auth/me");
+      if (res.success && res.data?.user) {
+        setUser(res.data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  const login = async (email, password) => {
+    const res = await api.post("/auth/login", { email, password });
+    if (res.success && res.data?.user) {
+      setUser(res.data.user);
+    }
+    return res;
+  };
+
+  const register = async (userData) => {
+    const res = await api.post("/auth/register", userData);
+    return res;
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      setUser(null);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout, fetchCurrentUser }}>
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
