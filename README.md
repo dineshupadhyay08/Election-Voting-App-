@@ -22,7 +22,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 - Email :- dk@gmail.com
 - Password :- Dinesh@123
 ---
-jsdlfjasd
+jsdlfj
 ### 🗳️ Elections
 - Create, update, delete elections (Admin only)
 - View all elections (Voters)
