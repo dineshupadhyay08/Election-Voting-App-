@@ -66,19 +66,19 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           district: "",
           state: "",
         },
-        goodWorks: [],
+        goodWorks: "",
         experience: "",
       });
     }
   }, [candidate]);
 
   const handleImageUpload = async () => {
-    if (!imageFile) return form.thumbnail || "";
+    if (!imageFile) return form.image || "";
 
     const formData = new FormData();
     formData.append("file", imageFile);
 
-    const res = await api.post("/upload", formData, {
+    const res = await api.post("/uploads/image", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
@@ -86,38 +86,32 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   };
 
   const handleSubmit = async () => {
-    if (!form.title || !form.category || !form.startDate || !form.endDate) {
-      toast.error("Title, category, start date and end date are required");
-      return;
-    }
-
-    const start = new Date(form.startDate + "T00:00:00");
-    const end = new Date(form.endDate + "T23:59:59");
-
-    if (start >= end) {
-      toast.error("End date must be after start date");
+    if (!form.fullName || !form.party || !form.image && !imageFile || !form.election) {
+      toast.error("Name, party, candidate image and election are required");
       return;
     }
 
     setLoading(true);
     try {
+      const image = await handleImageUpload();
       const payload = {
         ...form,
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
+        image,
       };
 
-      if (election) {
-        await api.patch(`/elections/${election._id}`, payload);
-        toast.success("Election updated");
-      } else {
-        await api.post("/elections", payload);
-        toast.success("Election created");
-      }
+      if (candidate) delete payload.election;
 
-      onSuccess();
+      const response = candidate
+        ? await api.patch(`/candidates/${candidate._id}`, payload)
+        : await api.post("/candidates", payload);
+      if (candidate) {
+        toast.success("Candidate updated");
+      } else {
+        toast.success("Candidate created");
+      }
+      onSuccess(response.data.candidate);
       onClose();
-    } catch (err) {
+    } catch {
       toast.error("Failed to save election");
     } finally {
       setLoading(false);
