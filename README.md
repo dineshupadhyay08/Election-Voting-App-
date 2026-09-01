@@ -3,7 +3,7 @@
 A full-stack **Election Voting System** built with the **MERN stack**, designed to simulate a real-world digital voting platform.  
 The project focuses on **role-based access (Admin / Voter)**, **secure authentication**, and a **dashboard-style UI**.
 
---- election like a war in the inidia but indian are not like a citizen
+--- election like a war in the inidia but indian are not 
 
 ## 🚀 Features
 
