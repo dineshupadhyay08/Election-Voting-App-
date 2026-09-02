@@ -3,32 +3,40 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("voteflow_theme") || "dark"; // Default to premium dark mode
-  });
+  const [theme, setTheme] = useState("light");
+  const [mounted, setMounted] = useState(false);
 
+  // Initialize theme from localStorage on mount
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    applyTheme(savedTheme);
+    setMounted(true);
+  }, []);
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
+  const applyTheme = (themeName) => {
+    const html = document.documentElement;
+    if (themeName === "dark") {
+      html.classList.add("dark");
     } else {
-      root.classList.add(theme);
+      html.classList.remove("dark");
     }
-
-    localStorage.setItem("voteflow_theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    applyTheme(newTheme);
+  };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -36,6 +44,8 @@ export const ThemeProvider = ({ children }) => {
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  if (!context) {
+    throw new Error("useTheme must be used within ThemeProvider");
+  }
   return context;
 };
