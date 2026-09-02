@@ -1,33 +1,54 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Calendar,
+  Users,
+  Vote,
+  CheckCircle2,
+  Clock,
+  Loader,
+  Lock,
+} from "lucide-react";
 import api from "../store/axios.js";
-import { toast } from "react-toastify";
-import ElectionCandidateCard from "../components/ElectionCandidateCard.jsx";
+import { useAuth } from "../context/AuthContext";
 
 const ElectionDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [election, setElection] = useState(null);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [voting, setVoting] = useState(false);
+  const [error, setError] = useState("");
+  const [hasVoted, setHasVoted] = useState(false);
+  const [votingCandidateId, setVotingCandidateId] = useState(null);
+  const [showVoteConfirm, setShowVoteConfirm] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [electionRes, candidatesRes, meRes] = await Promise.all([
+        setLoading(true);
+        setError("");
+
+        const [electionRes, candidatesRes] = await Promise.all([
           api.get(`/elections/${id}`),
-          api.get(`/candidates?electionId=${id}`),
-          api.get("/voters/me"),
+          api.get(`/elections/${id}/candidates`),
         ]);
 
         setElection(electionRes.data);
-        setCandidates(candidatesRes.data);
-        setIsAdmin(meRes.data.isAdmin);
+        setCandidates(candidatesRes.data || []);
+
+        // Check if user has voted in this election
+        const meRes = await api.get("/voters/me");
+        if (meRes.data?.votedElections?.includes(id)) {
+          setHasVoted(true);
+        }
       } catch (err) {
-        toast.error("Failed to load election details");
+        setError("Failed to load election details");
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -36,130 +57,292 @@ const ElectionDetails = () => {
     if (id) fetchData();
   }, [id]);
 
-  const handleVote = async (candidateId) => {
+  const handleVote = async (candidateId, candidateName) => {
     if (election.status !== "LIVE") {
-      toast.error("Voting is not active for this election");
+      alert("Voting is not active for this election");
       return;
     }
 
-    if (voting) return;
+    if (hasVoted) {
+      alert("You have already voted in this election");
+      return;
+    }
 
-    setVoting(true);
+    setShowVoteConfirm({ candidateId, candidateName });
+  };
+
+  const confirmVote = async () => {
+    if (!showVoteConfirm) return;
+
     try {
-      await api.patch(`/candidates/${candidateId}/vote`);
-      toast.success("Vote recorded successfully");
+      setVotingCandidateId(showVoteConfirm.candidateId);
+      await api.patch(`/candidates/${showVoteConfirm.candidateId}/vote`);
 
-      const res = await api.get(`/candidates?electionId=${id}`);
-      setCandidates(res.data);
+      setHasVoted(true);
+      setShowVoteConfirm(null);
+
+      // Refresh candidates to show updated vote counts
+      const res = await api.get(`/elections/${id}/candidates`);
+      setCandidates(res.data || []);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Voting failed");
+      alert(err.response?.data?.message || "Voting failed. Please try again.");
     } finally {
-      setVoting(false);
+      setVotingCandidateId(null);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "LIVE":
+        return <span className="badge-live">● LIVE NOW</span>;
+      case "UPCOMING":
+        return <span className="badge-warning">Upcoming</span>;
+      case "ENDED":
+      case "COMPLETED":
+        return <span className="badge-success">Ended</span>;
+      default:
+        return <span className="badge-info">{status}</span>;
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        Loading election...
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <Loader size={40} className="animate-spin text-amber-500 mx-auto mb-4" />
+          <p className="text-text-muted">Loading election details...</p>
+        </div>
       </div>
     );
   }
 
-  if (!election) {
+  if (error || !election) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-600">
-        Election not found
+      <div className="card p-8 text-center">
+        <AlertTriangle size={40} className="mx-auto text-red-500 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Unable to Load Election</h2>
+        <p className="text-text-muted mb-6">{error || "Election not found"}</p>
+        <button onClick={() => navigate("/elections")} className="btn-secondary">
+          <ArrowLeft size={18} />
+          Back to Elections
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      {/* HEADER */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
-            {election.thumbnail && (
-              <img
-                src={election.thumbnail}
-                alt={election.title}
-                className="w-16 h-16 rounded-lg object-cover"
-              />
-            )}
+    <div className="space-y-6 animate-fade-in">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate("/elections")}
+        className="btn-ghost mb-4"
+      >
+        <ArrowLeft size={18} />
+        Back to Elections
+      </button>
 
+      {/* Header */}
+      <div className="card-lg p-6 sm:p-8">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>{getStatusBadge(election.status)}</div>
+          <div className="text-right text-sm text-text-muted">
+            {election.category}
+          </div>
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4">{election.title}</h1>
+        <p className="text-lg text-text-soft mb-6">{election.description}</p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="glass rounded-xl p-4">
+            <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Start
+            </div>
+            <p className="mt-2 text-sm font-medium">
+              {election.startDate
+                ? new Date(election.startDate).toLocaleDateString("en-IN")
+                : "TBD"}
+            </p>
+          </div>
+          <div className="glass rounded-xl p-4">
+            <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              End
+            </div>
+            <p className="mt-2 text-sm font-medium">
+              {election.endDate
+                ? new Date(election.endDate).toLocaleDateString("en-IN")
+                : "TBD"}
+            </p>
+          </div>
+          <div className="glass rounded-xl p-4">
+            <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Candidates
+            </div>
+            <p className="mt-2 text-sm font-medium">{candidates.length}</p>
+          </div>
+          <div className="glass rounded-xl p-4">
+            <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Total Votes
+            </div>
+            <p className="mt-2 text-sm font-medium">
+              {candidates.reduce((sum, c) => sum + (c.voteCount || 0), 0)}
+            </p>
+          </div>
+        </div>
+
+        {/* Voting Status */}
+        {hasVoted && (
+          <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex gap-3">
+            <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
             <div>
-              <h1 className="text-2xl font-bold">{election.title}</h1>
-              <p className="text-gray-600">{election.category}</p>
+              <p className="font-medium text-green-600">You have already voted</p>
+              <p className="text-sm text-green-600/80">
+                Your vote has been recorded for this election
+              </p>
             </div>
           </div>
+        )}
 
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
-              election.status === "LIVE"
-                ? "bg-green-100 text-green-600"
-                : election.status === "UPCOMING"
-                  ? "bg-blue-100 text-blue-600"
-                  : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            {election.status}
-          </span>
-        </div>
-
-        <div className="text-sm text-gray-500">
-          <p>Start: {new Date(election.startDate).toLocaleString()}</p>
-          <p>End: {new Date(election.endDate).toLocaleString()}</p>
-        </div>
-      </div>
-
-      {/* CANDIDATES */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-6">Election Candidates</h2>
-
-        {candidates.length === 0 ? (
-          <p className="text-gray-500">
-            No candidates assigned to this election.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {candidates.map((candidate) => (
-              <ElectionCandidateCard
-                key={candidate._id}
-                candidate={candidate}
-                electionStatus={election.status}
-                onVote={handleVote}
-              />
-            ))}
+        {election.status !== "LIVE" && (
+          <div className="mt-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex gap-3">
+            <Clock size={20} className="text-blue-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-blue-600">
+                {election.status === "UPCOMING"
+                  ? "Voting has not started yet"
+                  : "Voting has ended"}
+              </p>
+              <p className="text-sm text-blue-600/80">
+                {election.status === "UPCOMING"
+                  ? `Voting opens on ${new Date(election.startDate).toLocaleDateString("en-IN")}`
+                  : "Results are now available below"}
+              </p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* ADMIN ACTIONS */}
-      {isAdmin && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold mb-4">Admin Actions</h2>
+      {/* Candidates */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Candidates</h2>
+        {candidates.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {candidates.map((candidate) => (
+              <div key={candidate._id} className="card p-5 sm:p-6 flex flex-col">
+                {/* Candidate Avatar */}
+                <div className="mb-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-xl">
+                    {candidate.fullName
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </div>
+                </div>
 
-          <div className="flex gap-4">
-            <button
-              onClick={() => navigate(`/elections/${id}/edit`)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg"
-            >
-              Edit Election
-            </button>
+                {/* Candidate Info */}
+                <h3 className="text-lg font-semibold mb-1">{candidate.fullName}</h3>
+                <p className="text-sm text-text-soft mb-2">{candidate.party}</p>
 
-            <button
-              onClick={() => {
-                if (window.confirm("Delete this election?")) {
-                  api.delete(`/elections/${id}`).then(() => {
-                    navigate("/elections");
-                  });
-                }
-              }}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg"
-            >
-              Delete Election
-            </button>
+                {candidate.education && (
+                  <p className="text-xs text-text-muted mb-3">
+                    <span className="font-medium">Education:</span> {candidate.education}
+                  </p>
+                )}
+
+                {candidate.experience && (
+                  <p className="text-xs text-text-muted mb-3 line-clamp-2">
+                    <span className="font-medium">Experience:</span> {candidate.experience}
+                  </p>
+                )}
+
+                {/* Vote Count */}
+                <div className="mt-auto pt-4 border-t border-amber-900/10 mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-text-muted">Votes</span>
+                    <span className="text-lg font-bold text-amber-500">
+                      {candidate.voteCount || 0}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Vote Button */}
+                {election.status === "LIVE" && !hasVoted ? (
+                  <button
+                    onClick={() =>
+                      handleVote(candidate._id, candidate.fullName)
+                    }
+                    disabled={votingCandidateId === candidate._id}
+                    className="btn-primary w-full py-2 flex items-center justify-center gap-2"
+                  >
+                    {votingCandidateId === candidate._id ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Voting...
+                      </>
+                    ) : (
+                      <>
+                        <Vote size={16} />
+                        Vote
+                      </>
+                    )}
+                  </button>
+                ) : hasVoted ? (
+                  <button disabled className="btn-secondary w-full py-2 opacity-50">
+                    <Lock size={16} />
+                    Already Voted
+                  </button>
+                ) : (
+                  <button disabled className="btn-secondary w-full py-2 opacity-50">
+                    Voting Closed
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="card p-12 text-center">
+            <Users size={40} className="mx-auto text-text-muted mb-4 opacity-50" />
+            <p className="text-text-muted">No candidates for this election yet</p>
+          </div>
+        )}
+      </div>
+
+      {/* Vote Confirmation Modal */}
+      {showVoteConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="card max-w-md w-full p-6 sm:p-8 animate-slide-up">
+            <h2 className="text-2xl font-bold mb-2">Confirm Your Vote</h2>
+            <p className="text-text-muted mb-6">
+              You are about to vote for:
+            </p>
+
+            <div className="glass rounded-xl p-4 mb-6">
+              <p className="text-lg font-semibold">{showVoteConfirm.candidateName}</p>
+              <p className="text-sm text-text-muted mt-1">
+                {election.title}
+              </p>
+            </div>
+
+            <p className="text-sm text-text-muted mb-6">
+              <span className="font-medium">⚠️ Important:</span> This action cannot be
+              undone. You can only vote once per election.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowVoteConfirm(null)}
+                className="btn-secondary flex-1"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmVote}
+                className="btn-primary flex-1 flex items-center justify-center gap-2"
+              >
+                <Vote size={18} />
+                Confirm Vote
+              </button>
+            </div>
           </div>
         </div>
       )}
