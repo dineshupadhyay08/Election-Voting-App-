@@ -132,7 +132,10 @@ const Landing = () => {
       </section>
 
       {/* Dark Spacer */}
-      <div className="h-16 sm:h-24"></div>
+      <div
+        className="relative z-10 h-20 sm:h-19"
+        style={{ background: 'var(--app-bg)', boxShadow: '0 6px 0 var(--app-bg)' }}
+      ></div>
 
       {/* Features Section */}
       <section className="px-4 sm:px-6 py-12 sm:py-20" style={{
