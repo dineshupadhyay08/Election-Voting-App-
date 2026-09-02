@@ -1,0 +1,510 @@
+/* ========================================
+   Election Voting App — Design System
+   Based on Ai-Habbit-Tracking reference
+   ======================================== */
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Inter var", ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, sans-serif;
+
+  /* Amber/Gold brand colors */
+  --color-brand-50: #fffbeb;
+  --color-brand-100: #fef3c7;
+  --color-brand-200: #fde68a;
+  --color-brand-300: #fcd34d;
+  --color-brand-400: #fbbf24;
+  --color-brand-500: #f59e0b;
+  --color-brand-600: #d97706;
+  --color-brand-700: #b45309;
+  --color-brand-800: #92400e;
+  --color-brand-900: #78350f;
+
+  /* Neutral gray palette */
+  --color-ink-50: #f7f7f8;
+  --color-ink-100: #eeeef1;
+  --color-ink-200: #d7d7de;
+  --color-ink-300: #b5b5c0;
+  --color-ink-400: #8b8b99;
+  --color-ink-500: #6b6b78;
+  --color-ink-600: #4e4e59;
+  --color-ink-700: #3a3a44;
+  --color-ink-800: #242430;
+  --color-ink-900: #13131b;
+}
+
+/* ========================================
+   Light Mode (default)
+   ======================================== */
+:root {
+  color-scheme: light;
+
+  /* Background and aurora mesh */
+  --bg-base: #faf8f2;
+  --bg-aurora-1: rgba(251, 191, 36, 0.28);   /* amber */
+  --bg-aurora-2: rgba(236, 72, 153, 0.14);   /* pink */
+  --bg-aurora-3: rgba(14, 165, 233, 0.14);   /* sky */
+
+  /* Text colors */
+  --text: #13131b;
+  --text-soft: #4e4e59;
+  --text-muted: #6b6b78;
+  --text-faint: #8b8b99;
+
+  /* Surface and glass effects */
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.88);
+  --surface-hover: rgba(255, 255, 255, 0.85);
+  --surface-border: rgba(255, 255, 255, 0.55);
+  --surface-ring: rgba(255, 255, 255, 0.9);
+
+  /* Input styling */
+  --input-bg: rgba(255, 255, 255, 0.75);
+  --input-border: rgba(15, 15, 27, 0.08);
+  --input-border-focus: #fbbf24;
+  --input-ring-focus: rgba(245, 158, 11, 0.22);
+
+  /* Badge/chip styling */
+  --chip-bg: rgba(15, 15, 27, 0.05);
+  --chip-text: #3a3a44;
+
+  /* Dividers and shadows */
+  --divider: rgba(15, 15, 27, 0.08);
+  --shadow: 0 8px 32px rgba(15, 15, 27, 0.06);
+  --shadow-sm: 0 4px 12px rgba(15, 15, 27, 0.04);
+  --shadow-lg: 0 12px 40px rgba(15, 15, 27, 0.12);
+
+  /* Status colors */
+  --status-success: #10b981;
+  --status-error: #ef4444;
+  --status-warning: #f59e0b;
+  --status-info: #06b6d4;
+
+  /* Chart colors */
+  --chart-grid: rgba(15, 15, 27, 0.08);
+  --chart-tick: #6b6b78;
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-tooltip-border: rgba(15, 15, 27, 0.08);
+}
+
+/* ========================================
+   Dark Mode
+   ======================================== */
+html.dark {
+  color-scheme: dark;
+
+  /* Background and aurora mesh */
+  --bg-base: #0c0a06;
+  --bg-aurora-1: rgba(251, 191, 36, 0.28);
+  --bg-aurora-2: rgba(217, 70, 239, 0.18);
+  --bg-aurora-3: rgba(16, 185, 129, 0.14);
+
+  /* Text colors */
+  --text: #ebebf5;
+  --text-soft: #b8b8c8;
+  --text-muted: #8a8aa0;
+  --text-faint: #64647a;
+
+  /* Surface and glass effects */
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.06);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-ring: rgba(255, 255, 255, 0.12);
+
+  /* Input styling */
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-border-focus: #fcd34d;
+  --input-ring-focus: rgba(252, 211, 77, 0.22);
+
+  /* Badge/chip styling */
+  --chip-bg: rgba(255, 255, 255, 0.06);
+  --chip-text: #c4c4d4;
+
+  /* Dividers and shadows */
+  --divider: rgba(255, 255, 255, 0.08);
+  --shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  /* Status colors */
+  --status-success: #10b981;
+  --status-error: #ef4444;
+  --status-warning: #f59e0b;
+  --status-info: #06b6d4;
+
+  /* Chart colors */
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --chart-tick: #8a8aa0;
+  --chart-tooltip-bg: rgba(20, 20, 36, 0.95);
+  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   Base Styles
+   ======================================== */
+:root {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  color: var(--text);
+  background: var(--bg-base);
+}
+
+/* Aurora mesh background — sits behind everything */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, var(--bg-aurora-1), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, var(--bg-aurora-2), transparent 60%),
+    radial-gradient(ellipse 60% 60% at 50% 100%, var(--bg-aurora-3), transparent 60%);
+  filter: saturate(1.1);
+}
+
+/* ========================================
+   Scrollbar Styling
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+}
+
+/* ========================================
+   Utility Components (CSS Classes)
+   ======================================== */
+
+/* Glass and card effects */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.glass-strong {
+  background: var(--surface-strong);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.card-lg {
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  border: none;
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-success:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.btn-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: none;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Inputs and forms */
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 200ms ease-out;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.input:focus {
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 4px var(--input-ring-focus);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textarea {
+  resize: none;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  color: var(--text-soft);
+}
+
+.form-error {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  color: var(--status-error);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+}
+
+/* Badges and chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--status-success);
+}
+
+.badge-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--status-error);
+}
+
+.badge-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--status-warning);
+}
+
+.badge-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--status-info);
+}
+
+.badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Divider */
+.divider {
+  border-color: var(--divider) !important;
+}
+
+/* Text utilities */
+.text-soft {
+  color: var(--text-soft);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-faint {
+  color: var(--text-faint);
+}
+
+/* Layout utilities */
+.grid-layout-auto {
+  display: grid;
+  grid-auto-columns: max-content;
+  gap: 1rem;
+}
