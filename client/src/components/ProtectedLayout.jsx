@@ -4,9 +4,9 @@ import { useAuth } from "../context/AuthContext";
 
 const ProtectedLayout = () => {
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--app-bg)] px-6 text-[var(--text-primary)]">
         <div className="dashboard-card max-w-md text-center">
@@ -22,7 +22,7 @@ const ProtectedLayout = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
