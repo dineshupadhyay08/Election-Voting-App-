@@ -2,80 +2,148 @@
 @import "./styles/design-system.css";
 @import "./styles/animations.css";
 
+/* ========================================
+   UNIFIED THEME SYSTEM — LIGHT MODE (Default)
+   ======================================== */
 :root {
-  color-scheme: dark;
-  --app-bg: #020617;
-  --app-bg-secondary: #081122;
-  --surface: rgba(15, 23, 42, 0.82);
-  --surface-2: rgba(15, 23, 42, 0.66);
-  --surface-3: rgba(30, 41, 59, 0.72);
-  --surface-4: rgba(51, 65, 85, 0.72);
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-soft: rgba(148, 163, 184, 0.14);
-  --border-strong: rgba(34, 211, 238, 0.28);
-  --accent-soft: rgba(34, 211, 238, 0.14);
-  --accent-strong: #67e8f9;
-  --accent-surface: rgba(34, 211, 238, 0.08);
-  --accent-border: rgba(34, 211, 238, 0.18);
-  --hero-text: rgba(226, 232, 240, 0.92);
-  --hero-text-soft: rgba(226, 232, 240, 0.74);
-  --status-success: #6ee7b7;
-  --status-success-soft: rgba(16, 185, 129, 0.14);
-  --status-success-border: rgba(16, 185, 129, 0.26);
-  --status-info: #38bdf8;
-  --danger-soft: rgba(244, 63, 94, 0.12);
-  --danger-text: #fda4af;
-  --danger-strong: #fecdd3;
-  --progress-track: rgba(148, 163, 184, 0.16);
-  --tooltip-bg: rgba(15, 23, 42, 0.94);
-  --tooltip-border: rgba(148, 163, 184, 0.18);
-  --chart-axis: #94a3b8;
-  --chart-grid: rgba(148, 163, 184, 0.15);
-  --chart-bar: #818cf8;
-  --brand-gradient: linear-gradient(135deg, #fbbf24, #d97706);
-  --brand-gradient-soft: linear-gradient(160deg, rgba(251, 191, 36, 0.16), rgba(217, 119, 6, 0.18));
-  --shadow-soft: 0 22px 50px rgba(2, 6, 23, 0.22);
-  --shadow-lift: 0 22px 44px rgba(2, 6, 23, 0.18);
-}
-
-:root[data-theme="light"] {
   color-scheme: light;
-  --app-bg: #edf2ff;
-  --app-bg-secondary: #dbe7ff;
-  --surface: rgba(255, 255, 255, 0.9);
-  --surface-2: rgba(248, 250, 252, 0.9);
-  --surface-3: rgba(226, 232, 240, 0.7);
-  --surface-4: rgba(226, 232, 240, 0.96);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-soft: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(79, 70, 229, 0.22);
-  --accent-soft: rgba(99, 102, 241, 0.12);
-  --accent-strong: #4338ca;
-  --accent-surface: rgba(79, 70, 229, 0.08);
-  --accent-border: rgba(79, 70, 229, 0.18);
-  --hero-text: rgba(255, 255, 255, 0.92);
-  --hero-text-soft: rgba(255, 255, 255, 0.72);
+
+  /* Background */
+  --app-bg: #faf8f2;
+  --app-bg-secondary: #f3f0e8;
+
+  /* Surfaces & Glass */
+  --surface: rgba(255, 255, 255, 0.80);
+  --surface-2: rgba(255, 255, 255, 0.90);
+  --surface-3: rgba(248, 245, 237, 0.85);
+  --surface-4: rgba(245, 240, 230, 0.75);
+
+  /* Text */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+
+  /* Borders */
+  --border-soft: rgba(26, 26, 26, 0.08);
+  --border-strong: rgba(245, 158, 11, 0.25);
+
+  /* Accents (Amber/Gold) */
+  --accent-soft: rgba(245, 158, 11, 0.12);
+  --accent-strong: #d97706;
+  --accent-surface: rgba(245, 158, 11, 0.08);
+  --accent-border: rgba(245, 158, 11, 0.20);
+
+  /* Hero/Large Text */
+  --hero-text: #0f0f0f;
+  --hero-text-soft: #2d2d2d;
+
+  /* Status Colors */
   --status-success: #059669;
   --status-success-soft: rgba(5, 150, 105, 0.12);
   --status-success-border: rgba(5, 150, 105, 0.22);
   --status-info: #0284c7;
-  --danger-soft: rgba(244, 63, 94, 0.08);
-  --danger-text: #be123c;
-  --danger-strong: #9f1239;
-  --progress-track: rgba(148, 163, 184, 0.18);
-  --tooltip-bg: rgba(255, 255, 255, 0.98);
-  --tooltip-border: rgba(15, 23, 42, 0.1);
-  --chart-axis: #64748b;
-  --chart-grid: rgba(148, 163, 184, 0.18);
-  --chart-bar: #4f46e5;
-  --brand-gradient: linear-gradient(135deg, #0284c7, #4338ca);
-  --brand-gradient-soft: linear-gradient(160deg, rgba(14, 165, 233, 0.16), rgba(79, 70, 229, 0.18));
-  --shadow-soft: 0 24px 60px rgba(99, 102, 241, 0.08);
-  --shadow-lift: 0 20px 38px rgba(79, 70, 229, 0.08);
+  --status-warning: #ea580c;
+  --status-error: #dc2626;
+
+  /* Danger States */
+  --danger-soft: rgba(220, 38, 38, 0.08);
+  --danger-text: #991b1b;
+  --danger-strong: #7f1d1d;
+
+  /* Progress & Tracking */
+  --progress-track: rgba(26, 26, 26, 0.12);
+
+  /* Tooltips */
+  --tooltip-bg: rgba(255, 255, 255, 0.95);
+  --tooltip-border: rgba(26, 26, 26, 0.12);
+
+  /* Charts */
+  --chart-axis: #718096;
+  --chart-grid: rgba(26, 26, 26, 0.08);
+  --chart-bar: #f59e0b;
+
+  /* Gradients */
+  --brand-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+  --brand-gradient-soft: linear-gradient(160deg, rgba(245, 158, 11, 0.16), rgba(217, 119, 6, 0.12));
+  --aurora-gradient:
+    radial-gradient(ellipse 100% 60% at 20% 0%, rgba(245, 158, 11, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 20%, rgba(236, 72, 153, 0.08), transparent 60%);
+
+  /* Shadows */
+  --shadow-soft: 0 8px 24px rgba(26, 26, 26, 0.08);
+  --shadow-lift: 0 6px 16px rgba(26, 26, 26, 0.06);
+}
+
+/* ========================================
+   DARK MODE (html.dark)
+   ======================================== */
+html.dark {
+  color-scheme: dark;
+
+  /* Background */
+  --app-bg: #0f0f0f;
+  --app-bg-secondary: #1a1a1a;
+
+  /* Surfaces & Glass */
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --surface-3: rgba(255, 255, 255, 0.12);
+  --surface-4: rgba(255, 255, 255, 0.15);
+
+  /* Text */
+  --text-primary: #f5f5f5;
+  --text-secondary: #b0b0b0;
+  --text-muted: #808080;
+
+  /* Borders */
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(245, 158, 11, 0.30);
+
+  /* Accents (Amber/Gold) */
+  --accent-soft: rgba(245, 158, 11, 0.15);
+  --accent-strong: #fbbf24;
+  --accent-surface: rgba(245, 158, 11, 0.10);
+  --accent-border: rgba(245, 158, 11, 0.25);
+
+  /* Hero/Large Text */
+  --hero-text: #ffffff;
+  --hero-text-soft: #e5e5e5;
+
+  /* Status Colors */
+  --status-success: #10b981;
+  --status-success-soft: rgba(16, 185, 129, 0.15);
+  --status-success-border: rgba(16, 185, 129, 0.30);
+  --status-info: #06b6d4;
+  --status-warning: #f97316;
+  --status-error: #ef4444;
+
+  /* Danger States */
+  --danger-soft: rgba(239, 68, 68, 0.12);
+  --danger-text: #fca5a5;
+  --danger-strong: #fecaca;
+
+  /* Progress & Tracking */
+  --progress-track: rgba(255, 255, 255, 0.10);
+
+  /* Tooltips */
+  --tooltip-bg: rgba(20, 20, 20, 0.95);
+  --tooltip-border: rgba(255, 255, 255, 0.12);
+
+  /* Charts */
+  --chart-axis: #b0b0b0;
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --chart-bar: #fbbf24;
+
+  /* Gradients */
+  --brand-gradient: linear-gradient(135deg, #fbbf24, #f59e0b);
+  --brand-gradient-soft: linear-gradient(160deg, rgba(251, 191, 36, 0.18), rgba(245, 158, 11, 0.14));
+  --aurora-gradient:
+    radial-gradient(ellipse 100% 60% at 20% 0%, rgba(251, 191, 36, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 20%, rgba(139, 92, 246, 0.10), transparent 60%);
+
+  /* Shadows */
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.40);
+  --shadow-lift: 0 6px 20px rgba(0, 0, 0, 0.30);
 }
 
 * {
@@ -83,11 +151,10 @@
 }
 
 html {
-  background:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 28%),
-    radial-gradient(circle at top right, rgba(99, 102, 241, 0.18), transparent 30%),
-    var(--app-bg);
+  background: var(--app-bg);
+  background-image: var(--aurora-gradient);
   scrollbar-gutter: stable;
+  transition: background-color 0.3s ease, background-image 0.3s ease;
 }
 
 body {
@@ -99,6 +166,7 @@ body {
   font-family: "Segoe UI", "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: color 0.3s ease;
 }
 
 a,
@@ -135,8 +203,13 @@ img {
 }
 
 .input-ui:focus {
-  border-color: rgba(56, 189, 248, 0.35);
-  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08);
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.input-ui:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .icon-ui {
@@ -145,7 +218,7 @@ img {
 }
 
 .dashboard-card {
-  @apply rounded-[32px] border p-5 sm:p-6;
+  @apply rounded-[32px] border p-5 sm:p-6 transition;
   border-color: var(--border-soft);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
@@ -154,36 +227,32 @@ img {
   backdrop-filter: blur(18px);
 }
 
+.dashboard-card:hover {
+  box-shadow: var(--shadow-lift);
+}
+
 .dashboard-card-glow {
   background:
-    radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 38%),
+    radial-gradient(circle at top, var(--accent-soft), transparent 38%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
     var(--surface);
 }
 
 .dashboard-panel {
-  @apply rounded-[28px] border;
+  @apply rounded-[28px] border transition;
   border-color: var(--border-soft);
   background: var(--surface-2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .dashboard-hero {
-  @apply grid gap-6 overflow-hidden rounded-[32px] border p-6 sm:p-8;
+  @apply grid gap-6 overflow-hidden rounded-[32px] border p-6 sm:p-8 transition;
   border-color: var(--border-soft);
   background:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 30%),
-    radial-gradient(circle at right, rgba(99, 102, 241, 0.2), transparent 28%),
-    linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.72));
+    radial-gradient(circle at top left, var(--accent-soft), transparent 30%),
+    linear-gradient(145deg, var(--surface), var(--surface-2));
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
-}
-
-:root[data-theme="light"] .dashboard-hero {
-  background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
-    radial-gradient(circle at right, rgba(79, 70, 229, 0.18), transparent 28%),
-    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9));
 }
 
 .dashboard-label {
@@ -192,9 +261,9 @@ img {
 }
 
 .dashboard-metric-tile {
-  @apply rounded-[28px] border p-4;
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  @apply rounded-[28px] border p-4 transition;
+  border-color: var(--border-soft);
+  background: var(--surface-2);
   backdrop-filter: blur(10px);
 }
 
@@ -209,14 +278,14 @@ img {
 }
 
 .dashboard-subcard {
-  @apply rounded-2xl border px-4 py-3;
+  @apply rounded-2xl border px-4 py-3 transition;
   border-color: var(--border-soft);
   background: var(--surface);
 }
 
 .dashboard-badge {
   @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em];
-  border-color: var(--border-strong);
+  border-color: var(--accent-border);
   color: var(--accent-strong);
   background: var(--accent-soft);
 }
@@ -233,20 +302,37 @@ img {
   background: var(--status-success-soft);
 }
 
+.dashboard-badge-danger {
+  border-color: rgba(239, 68, 68, 0.30);
+  color: var(--status-error);
+  background: var(--danger-soft);
+}
+
+.dashboard-badge-warning {
+  border-color: rgba(217, 119, 6, 0.30);
+  color: var(--status-warning);
+  background: rgba(217, 119, 6, 0.12);
+}
+
 .dashboard-primary-button {
   @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200;
   background: var(--brand-gradient);
   color: white;
-  box-shadow: 0 18px 36px rgba(14, 165, 233, 0.24);
+  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.24);
+  border: none;
 }
 
 .dashboard-primary-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 22px 38px rgba(14, 165, 233, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(245, 158, 11, 0.32);
+}
+
+.dashboard-primary-button:active {
+  transform: translateY(0);
 }
 
 .dashboard-primary-button:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -269,6 +355,7 @@ img {
 .dashboard-secondary-button:hover,
 .dashboard-icon-button:hover {
   background: var(--surface-3);
+  border-color: var(--border-strong);
   box-shadow: var(--shadow-lift);
 }
 
@@ -284,11 +371,10 @@ img {
   background:
     linear-gradient(
       90deg,
-      rgba(148, 163, 184, 0.08) 20%,
-      rgba(148, 163, 184, 0.16) 36%,
-      rgba(148, 163, 184, 0.08) 52%
-    ),
-    var(--surface);
+      var(--surface) 20%,
+      var(--surface-2) 36%,
+      var(--surface) 52%
+    );
   background-size: 200% 100%;
   animation: dashboardPulse 1.8s linear infinite;
 }
@@ -320,13 +406,13 @@ img {
 
 ::selection {
   background: var(--accent-soft);
+  color: var(--text-primary);
 }
 
 @keyframes dashboardPulse {
   from {
     background-position: 200% 0;
   }
-
   to {
     background-position: -200% 0;
   }

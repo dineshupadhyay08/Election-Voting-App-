@@ -81,11 +81,19 @@
   --status-warning: #f59e0b;
   --status-info: #06b6d4;
 
+  /* Brand primary colors */
+  --brand-primary: #f59e0b;
+  --brand-primary-light: #fbbf24;
+
   /* Chart colors */
   --chart-grid: rgba(15, 15, 27, 0.08);
   --chart-tick: #6b6b78;
+  --chart-accent: #f59e0b;
   --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
   --chart-tooltip-border: rgba(15, 15, 27, 0.08);
+
+  /* Modal overlay */
+  --modal-overlay: rgba(15, 15, 27, 0.40);
 }
 
 /* ========================================
@@ -135,11 +143,19 @@ html.dark {
   --status-warning: #f59e0b;
   --status-info: #06b6d4;
 
+  /* Brand primary colors */
+  --brand-primary: #fbbf24;
+  --brand-primary-light: #fcd34d;
+
   /* Chart colors */
   --chart-grid: rgba(255, 255, 255, 0.08);
   --chart-tick: #8a8aa0;
+  --chart-accent: #fbbf24;
   --chart-tooltip-bg: rgba(20, 20, 36, 0.95);
   --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+
+  /* Modal overlay */
+  --modal-overlay: rgba(0, 0, 0, 0.55);
 }
 
 /* ========================================

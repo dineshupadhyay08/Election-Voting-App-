@@ -120,7 +120,8 @@ const DashboardShell = () => {
           {sidebarOpen && (
             <motion.button
               aria-label="Close menu overlay"
-              className="fixed inset-0 z-30 bg-slate-950/55 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-30 backdrop-blur-sm lg:hidden"
+              style={{ backgroundColor: 'var(--modal-overlay)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

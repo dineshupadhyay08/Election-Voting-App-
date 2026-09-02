@@ -32,11 +32,11 @@ const Landing = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navigation */}
-      <nav className="glass-strong sticky top-0 z-50 px-4 sm:px-6 py-4 border-b border-amber-900/10">
+      <nav className="glass-strong sticky top-0 z-50 px-4 sm:px-6 py-4 border-b" style={{ borderColor: 'var(--border-soft)' }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="glass rounded-xl p-2">
-              <Vote size={24} className="text-amber-500" />
+              <Vote size={24} style={{ color: 'var(--brand-primary)' }} />
             </div>
             <h1 className="text-xl font-bold">VoteFlow</h1>
           </div>
@@ -59,7 +59,7 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="flex-1 flex items-center justify-center px-4 sm:px-6 py-12 sm:py-20">
+      <section className="flex-1 flex items-center justify-center px-4 sm:px-6 py-12 sm:py-20 pb-24 sm:pb-32">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <div className="mb-6">
             <div className="inline-flex items-center gap-2 mb-4">
@@ -70,7 +70,12 @@ const Landing = () => {
             </div>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r" style={{
+            backgroundImage: 'linear-gradient(to right, var(--brand-primary-light), var(--chart-accent))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
             Your Voice Matters
           </h2>
 
@@ -126,8 +131,13 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Dark Spacer */}
+      <div className="h-16 sm:h-24"></div>
+
       {/* Features Section */}
-      <section className="px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-b from-transparent to-amber-500/5">
+      <section className="px-4 sm:px-6 py-12 sm:py-20" style={{
+        backgroundImage: 'linear-gradient(to bottom, transparent, var(--accent-soft))'
+      }}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl sm:text-4xl font-bold mb-4">Why Choose VoteFlow?</h3>
@@ -144,7 +154,7 @@ const Landing = () => {
                   style={{ animationDelay: `${idx * 0.1}s` }}
                 >
                   <div className="glass rounded-2xl p-4 w-fit mb-4">
-                    <Icon size={24} className="text-amber-500" />
+                    <Icon size={24} style={{ color: 'var(--brand-primary)' }} />
                   </div>
                   <h4 className="font-semibold mb-2">{feature.title}</h4>
                   <p className="text-sm text-text-muted">{feature.description}</p>
@@ -180,7 +190,7 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-amber-900/10 px-4 sm:px-6 py-8">
+      <footer className="mt-auto border-t px-4 sm:px-6 py-8" style={{ borderColor: 'var(--border-soft)' }}>
         <div className="max-w-6xl mx-auto text-center text-text-muted text-sm">
           <p>© 2026 VoteFlow. Secure voting platform for democratic participation.</p>
         </div>

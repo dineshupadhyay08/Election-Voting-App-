@@ -119,22 +119,22 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backgroundColor: 'var(--modal-overlay)' }}>
+      <div className="card-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-semibold mb-4">
           {candidate ? "Update Candidate" : "Add Candidate"}
         </h3>
 
         <div className="space-y-3">
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Full Name *"
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
           />
 
           <select
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             value={form.gender}
             onChange={(e) => setForm({ ...form, gender: e.target.value })}
           >
@@ -146,21 +146,21 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
 
           <input
             type="number"
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Age *"
             value={form.age}
             onChange={(e) => setForm({ ...form, age: e.target.value })}
           />
 
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Mobile Number *"
             value={form.mobileNumber}
             onChange={(e) => setForm({ ...form, mobileNumber: e.target.value })}
           />
 
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Party *"
             value={form.party}
             onChange={(e) => setForm({ ...form, party: e.target.value })}
@@ -170,18 +170,18 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
             type="file"
             accept="image/*"
             onChange={(e) => setImageFile(e.target.files[0])}
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
           />
 
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Motto"
             value={form.motto}
             onChange={(e) => setForm({ ...form, motto: e.target.value })}
           />
 
           <select
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             value={form.election}
             onChange={(e) => setForm({ ...form, election: e.target.value })}
           >
@@ -195,7 +195,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
 
           {/* Address Fields */}
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="Village *"
             value={form.address.village}
             onChange={(e) =>
@@ -207,7 +207,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           />
 
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="District"
             value={form.address.district}
             onChange={(e) =>
@@ -219,7 +219,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           />
 
           <input
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input"
             placeholder="State"
             value={form.address.state}
             onChange={(e) =>
@@ -231,7 +231,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           />
 
           <textarea
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input textarea"
             placeholder="Good Works (describe your achievements)"
             rows="2"
             value={form.goodWorks}
@@ -244,7 +244,7 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
           />
 
           <textarea
-            className="w-full border px-4 py-2 rounded-lg"
+            className="input textarea"
             placeholder="Experience"
             rows="2"
             value={form.experience}
@@ -253,13 +253,13 @@ const CandidateFormModal = ({ candidate, onClose, onSuccess }) => {
         </div>
 
         <div className="flex justify-end gap-3 mt-4">
-          <button onClick={onClose} className="border px-4 py-2 rounded-lg">
+          <button onClick={onClose} className="btn-secondary">
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            className="btn-primary"
           >
             {loading
               ? candidate
