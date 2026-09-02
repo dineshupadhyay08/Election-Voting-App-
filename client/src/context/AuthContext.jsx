@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { api } from "../lib/axios";
+import api from "../store/axios";
 
 const AuthContext = createContext();
 
@@ -10,12 +10,10 @@ export const AuthProvider = ({ children }) => {
   const fetchCurrentUser = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/auth/me");
-      if (res.success && res.data?.user) {
-        setUser(res.data.user);
-      } else {
-        setUser(null);
-      }
+      const res = await api.get("/voters/me");
+      // store/axios doesn't have interceptor, so res is the axios response object
+      // res.data contains the actual data
+      setUser(res.data);
     } catch (err) {
       setUser(null);
     } finally {
@@ -28,21 +26,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    if (res.success && res.data?.user) {
-      setUser(res.data.user);
-    }
-    return res;
+    const res = await api.post("/voters/login", { email, password });
+    // store/axios doesn't have interceptor, so res.data contains the user object
+    setUser(res.data);
+    return res.data;
   };
 
   const register = async (userData) => {
-    const res = await api.post("/auth/register", userData);
+    const res = await api.post("/voters/register", userData);
     return res;
   };
 
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/voters/logout");
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
