@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Vote, AlertCircle, Loader } from "lucide-react";
 import api from "../store/axios";
+import ThemeToggle from "../components/ThemeToggle";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,11 +21,17 @@ const Login = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!form.email || !form.password) {
+      setError("Please fill in all fields");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -36,79 +43,123 @@ const Login = () => {
 
       navigate(location.state?.from?.pathname || "/");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8 sm:py-12">
-      <div className="w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl px-5 sm:px-6 py-8 sm:py-10">
-        <div className="flex flex-col items-center mb-6 sm:mb-8">
-          <img
-            src="/Register_vote_img.jpg"
-            alt="Voting Logo"
-            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg mb-3 sm:mb-4"
-          />
-          <h2 className="text-lg sm:text-xl font-semibold">Welcome Back</h2>
-          <p className="text-sm text-gray-500 mt-1 text-center">
-            Login to continue voting
-          </p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 animate-fade-in">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-sm card-lg p-6 sm:p-8">
+        {/* Header */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="glass rounded-2xl p-3 mb-4">
+            <Vote size={32} style={{ color: 'var(--brand-primary)' }} />
+          </div>
+          <h1 className="text-2xl font-bold mb-1">Welcome Back</h1>
+          <p className="text-text-muted">Login to your voting account</p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+          <div className="mb-6 p-4 rounded-xl border flex gap-3 animate-slide-down" style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+            borderColor: 'var(--status-error)',
+          }}>
+            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--status-error)' }} />
+            <p className="text-sm" style={{ color: 'var(--status-error)' }}>{error}</p>
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email address"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="input-ui"
-          />
-
-          <div className="relative">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+          <div>
+            <label className="label">Email Address</label>
             <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={form.password}
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              value={form.email}
               onChange={handleChange}
+              className="input"
               required
-              className="input-ui pr-10"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="icon-ui"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+          </div>
+
+          <div>
+            <label className="label">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                className="input pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text transition"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
-            }`}
+            className="w-full btn-primary py-3 flex items-center justify-center gap-2 mt-6"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <>
+                <Loader size={18} className="animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
-        <div className="text-center mt-6 sm:mt-8 text-sm">
-          <p>
-            Don’t have an account?{" "}
-            <Link to="/register" className="text-indigo-600 font-semibold">
-              Register
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px" style={{
+            backgroundImage: 'linear-gradient(to right, transparent, var(--brand-primary), transparent)',
+            opacity: 0.2
+          }}></div>
+        </div>
+
+        {/* Demo Credentials */}
+        <div className="space-y-3 mb-6 p-4 rounded-xl border" style={{
+          backgroundColor: 'var(--accent-soft)',
+          borderColor: 'var(--accent-border)'
+        }}>
+          <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Demo Accounts</p>
+          <div className="space-y-2 text-xs">
+            <div>
+              <p className="text-text-soft font-medium">Voter:</p>
+              <p className="text-text-muted">dienshu@gmail.com / Dinesh@123</p>
+            </div>
+            <div>
+              <p className="text-text-soft font-medium">Admin:</p>
+              <p className="text-text-muted">dk@gmail.com / Dinesh@123</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-text-muted text-sm">
+            Don't have an account?{" "}
+            <Link to="/register" style={{ color: 'var(--brand-primary)' }} className="hover:opacity-80 font-medium transition">
+              Register now
             </Link>
           </p>
         </div>
