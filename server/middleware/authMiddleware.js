@@ -16,11 +16,10 @@ const authMiddleware = (req, res, next) => {
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer ")
     ) {
-      token = req.headers.authorization.split(" ")[1][33];
+      token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) {
-      console.log("No token provided. Cookies:", req.cookies);
       return next(
         new HttpError("Authentication required. No token provided.", 401),
       );
@@ -29,7 +28,6 @@ const authMiddleware = (req, res, next) => {
     const secret =
       process.env.JWT_SECRET || "default_secret_key_change_in_production";
     const decoded = jwt.verify(token, secret);
-    console.log("JWT DECODED:", decoded);
     req.user = decoded;
 
     next();
