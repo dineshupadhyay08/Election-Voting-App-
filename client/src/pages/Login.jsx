@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, Vote, AlertCircle, Loader } from "lucide-react";
-import api from "../store/axios";
+import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "../components/ThemeToggle";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -35,15 +36,20 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const res = await api.post("/voters/login", form);
+      const user = await login(form.email, form.password);
 
-      localStorage.setItem("userId", res.data.id);
-      localStorage.setItem("isAdmin", res.data.isAdmin);
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("isAdmin", String(user.isAdmin));
       await queryClient.invalidateQueries({ queryKey: ["auth"] });
 
-      navigate(location.state?.from?.pathname || "/");
+      navigate(location.state?.from?.pathname || "/home", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          (err.request
+            ? "Unable to reach the server. Please try again."
+            : "Login failed. Please try again."),
+      );
     } finally {
       setLoading(false);
     }
@@ -71,7 +77,7 @@ const Login = () => {
             borderColor: 'var(--status-error)',
           }}>
             <AlertCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--status-error)' }} />
-            <p className="text-sm" style={{ color: 'var(--status-error)' }}>{error}</p>
+            <p role="alert" className="text-sm" style={{ color: 'var(--status-error)' }}>{error}</p>
           </div>
         )}
 
@@ -87,6 +93,7 @@ const Login = () => {
               onChange={handleChange}
               className="input"
               required
+              disabled={loading}
             />
           </div>
 
@@ -101,10 +108,12 @@ const Login = () => {
                 onChange={handleChange}
                 className="input pr-10"
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text transition"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
