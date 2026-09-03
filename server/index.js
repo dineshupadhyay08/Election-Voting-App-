@@ -16,8 +16,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // Allow both Vite and potential React dev server
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +33,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Connect to MongoDB
-connect(process.env.MONGO_URL)
+connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected successfully");
     app.listen(process.env.PORT, () =>
