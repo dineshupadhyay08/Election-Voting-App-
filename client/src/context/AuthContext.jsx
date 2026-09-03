@@ -22,7 +22,31 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchCurrentUser();
+    let isMounted = true;
+
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get("/voters/me");
+        if (isMounted) {
+          setUser(res.data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email, password) => {
