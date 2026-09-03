@@ -59,12 +59,18 @@ const Register = () => {
         email: formData.email,
         mobileNumber: formData.mobileNumber,
         password: formData.password,
+        password2: formData.password2,
       });
 
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          (err.request
+            ? "Unable to reach the server. Please try again."
+            : "Registration failed. Please try again."),
+      );
     } finally {
       setLoading(false);
     }
@@ -89,7 +95,7 @@ const Register = () => {
         {error && (
           <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex gap-3 animate-slide-down">
             <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-500">{error}</p>
+            <p role="alert" className="text-sm text-red-500">{error}</p>
           </div>
         )}
 
@@ -113,6 +119,7 @@ const Register = () => {
               onChange={handleChange}
               className="input"
               required
+              disabled={loading}
             />
           </div>
 
@@ -126,6 +133,7 @@ const Register = () => {
               onChange={handleChange}
               className="input"
               required
+              disabled={loading}
             />
           </div>
 
@@ -139,6 +147,7 @@ const Register = () => {
               onChange={handleChange}
               className="input"
               required
+              disabled={loading}
             />
           </div>
 
@@ -153,10 +162,12 @@ const Register = () => {
                 onChange={handleChange}
                 className="input pr-10"
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text transition"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -175,10 +186,12 @@ const Register = () => {
                 onChange={handleChange}
                 className="input pr-10"
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={loading}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text transition"
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
