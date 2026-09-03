@@ -99,43 +99,47 @@ const Landing = () => {
           </div>
 
           {/* Featured Election Preview */}
-          <div className="card-lg p-6 sm:p-8 animate-slide-up">
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-semibold mb-2">Active Elections</h3>
-              <p className="text-text-muted">Join thousands of voters participating today</p>
+          <div className="card-lg relative isolate p-6 sm:p-8 animate-slide-up">
+            <div className="relative z-10">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-semibold mb-2">Active Elections</h3>
+                <p className="text-text-muted">Join thousands of voters participating today</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="glass rounded-xl p-4">
+                  <div className="badge-live mb-2 justify-center">
+                    <span>● LIVE</span>
+                  </div>
+                  <h4 className="font-semibold mb-1">General Elections 2026</h4>
+                  <p className="text-sm text-text-muted">National Level</p>
+                </div>
+                <div className="glass rounded-xl p-4">
+                  <div className="badge-warning mb-2 justify-center">
+                    <span>Upcoming</span>
+                  </div>
+                  <h4 className="font-semibold mb-1">State Assembly</h4>
+                  <p className="text-sm text-text-muted">Regional Elections</p>
+                </div>
+                <div className="glass rounded-xl p-4">
+                  <div className="badge-info mb-2 justify-center">
+                    <span>Voting Open</span>
+                  </div>
+                  <h4 className="font-semibold mb-1">Local Governance</h4>
+                  <p className="text-sm text-text-muted">Municipal Level</p>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="glass rounded-xl p-4">
-                <div className="badge-live mb-2 justify-center">
-                  <span>● LIVE</span>
-                </div>
-                <h4 className="font-semibold mb-1">General Elections 2026</h4>
-                <p className="text-sm text-text-muted">National Level</p>
-              </div>
-              <div className="glass rounded-xl p-4">
-                <div className="badge-warning mb-2 justify-center">
-                  <span>Upcoming</span>
-                </div>
-                <h4 className="font-semibold mb-1">State Assembly</h4>
-                <p className="text-sm text-text-muted">Regional Elections</p>
-              </div>
-              <div className="glass rounded-xl p-4">
-                <div className="badge-info mb-2 justify-center">
-                  <span>Voting Open</span>
-                </div>
-                <h4 className="font-semibold mb-1">Local Governance</h4>
-                <p className="text-sm text-text-muted">Municipal Level</p>
-              </div>
-            </div>
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 z-0 w-screen -translate-x-1/2"
+              style={{ bottom: '-6px', height: '54px', background: 'var(--app-bg)' }}
+            ></div>
           </div>
         </div>
       </section>
 
-      {/* Dark Spacer */}
-      <div
-        className="relative z-10 h-20 sm:h-19"
-        style={{ background: 'var(--app-bg)', boxShadow: '0 6px 0 var(--app-bg)' }}
-      ></div>
+      {/* Transition Spacer */}
+      <div className="h-20 sm:h-19"></div>
 
       {/* Features Section */}
       <section className="px-4 sm:px-6 py-12 sm:py-20" style={{
