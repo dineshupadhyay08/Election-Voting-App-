@@ -189,26 +189,38 @@ const ElectionDetails = () => {
             </div>
             <p className="mt-2 text-sm font-medium">{candidates.length}</p>
           </div>
-          <div className="glass rounded-xl p-4">
-            <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Total Votes
+          {user?.isAdmin && (
+            <div className="glass rounded-xl p-4">
+              <div className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+                Total Votes
+              </div>
+              <p className="mt-2 text-sm font-medium">
+                {candidates.reduce((sum, c) => sum + (c.voteCount || 0), 0)}
+              </p>
             </div>
-            <p className="mt-2 text-sm font-medium">
-              {candidates.reduce((sum, c) => sum + (c.voteCount || 0), 0)}
-            </p>
-          </div>
+          )}
         </div>
 
         {/* Voting Status */}
         {hasVoted && (
-          <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex gap-3">
-            <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-green-600">You have already voted</p>
-              <p className="text-sm text-green-600/80">
-                Your vote has been recorded for this election
-              </p>
+          <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex gap-3 items-start justify-between">
+            <div className="flex gap-3 flex-1">
+              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-green-600">You have already voted</p>
+                <p className="text-sm text-green-600/80">
+                  Your vote has been recorded for this election
+                </p>
+              </div>
             </div>
+            <button
+              onClick={() => navigate("/candidates")}
+              className="ml-2 flex-shrink-0 text-green-600 hover:text-green-700 transition-colors text-sm font-medium whitespace-nowrap flex items-center gap-1"
+              title="View all candidates"
+            >
+              <span>View Candidates</span>
+              <span className="text-xs">→</span>
+            </button>
           </div>
         )}
 
@@ -235,54 +247,73 @@ const ElectionDetails = () => {
       <div>
         <h2 className="text-2xl font-bold mb-4">Candidates</h2>
         {candidates.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {candidates.map((candidate) => (
-              <div key={candidate._id} className="card p-5 sm:p-6 flex flex-col">
+              <div key={candidate._id} className="card p-3 sm:p-6 flex flex-col relative">
+                {/* View Candidate Navigation - Top Right */}
+                <button
+                  onClick={() => navigate("/candidates")}
+                  className="absolute top-3 sm:top-4 right-3 sm:right-4 px-2 sm:px-2.5 py-1 sm:py-1.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded-md text-xs font-medium hover:bg-amber-200 dark:hover:bg-amber-500/30 transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
+                  title="View all candidates"
+                >
+                  <span className="hidden sm:inline">View</span>
+                  <span className="text-xs">→</span>
+                </button>
+
                 {/* Candidate Avatar */}
-                <div className="mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-xl">
+                <div className="mb-3 sm:mb-4">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl flex-shrink-0">
                     {candidate.fullName
                       ?.split(" ")
                       .map((n) => n[0])
-                      .join("")}
+                      .join("")
+                      .slice(0, 2)}
                   </div>
                 </div>
 
                 {/* Candidate Info */}
-                <h3 className="text-lg font-semibold mb-1">{candidate.fullName}</h3>
-                <p className="text-sm text-text-soft mb-2">{candidate.party}</p>
+                <h3 className="text-base sm:text-lg font-semibold mb-1 break-words overflow-hidden">
+                  {candidate.fullName}
+                </h3>
+                <p className="text-xs sm:text-sm text-text-soft mb-2 truncate">
+                  {candidate.party}
+                </p>
 
                 {candidate.education && (
-                  <p className="text-xs text-text-muted mb-3">
+                  <p className="text-xs text-text-muted mb-2 line-clamp-1 sm:line-clamp-2">
                     <span className="font-medium">Education:</span> {candidate.education}
                   </p>
                 )}
 
                 {candidate.experience && (
-                  <p className="text-xs text-text-muted mb-3 line-clamp-2">
-                    <span className="font-medium">Experience:</span> {candidate.experience}
+                  <p className="text-xs text-text-muted mb-2 line-clamp-1 sm:line-clamp-2">
+                    <span className="font-medium">Exp:</span> {candidate.experience}
                   </p>
                 )}
 
-                {/* Vote Count */}
-                <div className="mt-auto pt-4 border-t border-amber-900/10 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-text-muted">Votes</span>
-                    <span className="text-lg font-bold text-amber-500">
-                      {candidate.voteCount || 0}
-                    </span>
+                {/* Vote Count - Only show to admins */}
+                {user?.isAdmin && (
+                  <div className="mt-auto pt-3 sm:pt-4 border-t border-amber-900/10 mb-3 sm:mb-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm text-text-muted">Votes</span>
+                      <span className="text-lg sm:text-lg font-bold text-amber-500">
+                        {candidate.voteCount || 0}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Action Buttons */}
-                <div className="space-y-2">
+                {/* Action Buttons - Responsive Stacking */}
+                <div className="space-y-2 sm:space-y-2 flex flex-col">
                   {/* View Candidate Button */}
                   <button
                     onClick={() => setSelectedCandidate(candidate)}
-                    className="btn-secondary w-full py-2 flex items-center justify-center gap-2 text-sm"
+                    className="btn-secondary w-full py-2 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
                   >
-                    <Info size={16} />
-                    View Candidate
+                    <Info size={14} className="sm:hidden" />
+                    <Info size={16} className="hidden sm:block" />
+                    <span className="hidden sm:inline">View Candidate</span>
+                    <span className="sm:hidden">View</span>
                   </button>
 
                   {/* Vote Button */}
@@ -292,27 +323,33 @@ const ElectionDetails = () => {
                         handleVote(candidate._id, candidate.fullName)
                       }
                       disabled={votingCandidateId === candidate._id}
-                      className="btn-primary w-full py-2 flex items-center justify-center gap-2"
+                      className="btn-primary w-full py-2 sm:py-2 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
                     >
                       {votingCandidateId === candidate._id ? (
                         <>
-                          <Loader size={16} className="animate-spin" />
-                          Voting...
+                          <Loader size={14} className="animate-spin sm:hidden" />
+                          <Loader size={16} className="animate-spin hidden sm:block" />
+                          <span className="hidden sm:inline">Voting...</span>
+                          <span className="sm:hidden">Wait...</span>
                         </>
                       ) : (
                         <>
-                          <Vote size={16} />
-                          Vote
+                          <Vote size={14} className="sm:hidden" />
+                          <Vote size={16} className="hidden sm:block" />
+                          <span className="hidden sm:inline">Vote</span>
+                          <span className="sm:hidden">Vote</span>
                         </>
                       )}
                     </button>
                   ) : hasVoted ? (
-                    <button disabled className="btn-secondary w-full py-2 opacity-50">
-                      <Lock size={16} />
-                      Already Voted
+                    <button disabled className="btn-secondary w-full py-2 sm:py-2 opacity-50 text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 flex-shrink-0">
+                      <Lock size={14} className="sm:hidden" />
+                      <Lock size={16} className="hidden sm:block" />
+                      <span className="hidden sm:inline">Already Voted</span>
+                      <span className="sm:hidden">Voted</span>
                     </button>
                   ) : (
-                    <button disabled className="btn-secondary w-full py-2 opacity-50">
+                    <button disabled className="btn-secondary w-full py-2 sm:py-2 opacity-50 text-xs sm:text-sm flex-shrink-0">
                       Voting Closed
                     </button>
                   )}
@@ -321,7 +358,7 @@ const ElectionDetails = () => {
             ))}
           </div>
         ) : (
-          <div className="card p-12 text-center">
+          <div className="card p-8 sm:p-12 text-center">
             <Users size={40} className="mx-auto text-text-muted mb-4 opacity-50" />
             <p className="text-text-muted">No candidates for this election yet</p>
           </div>
@@ -447,6 +484,18 @@ const ElectionDetails = () => {
                   <p className="text-text-soft">{selectedCandidate.spouseName}</p>
                 </div>
               )}
+
+              {/* View Full Candidate Navigation - After Contact Info */}
+              <div className="mt-6 pt-4 border-t border-amber-900/10">
+                <button
+                  onClick={() => navigate("/candidates")}
+                  className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 text-sm font-medium flex items-center gap-2 transition-colors"
+                  title="View full candidate profile"
+                >
+                  <span>View Candidates</span>
+                  <span>→</span>
+                </button>
+              </div>
             </div>
 
             {/* Vote Stats */}
