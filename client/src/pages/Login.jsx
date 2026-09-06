@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, Vote, AlertCircle, Loader } from "lucide-react";
@@ -10,6 +10,14 @@ const Login = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const { login } = useAuth();
+  const { user } = useAuth(); // Add this
+
+  useEffect(() => {
+    if (user) {
+      navigate(user.isAdmin ? "/admin/dashboard" : "/home", { replace: true });
+    }
+  }, [user, navigate]);
+
 
   const [form, setForm] = useState({
     email: "",
@@ -42,7 +50,9 @@ const Login = () => {
       localStorage.setItem("isAdmin", String(user.isAdmin));
       await queryClient.invalidateQueries({ queryKey: ["auth"] });
 
-      navigate(location.state?.from?.pathname || "/home", { replace: true });
+      // Redirect based on role
+      const redirectPath = user.isAdmin ? "/admin/dashboard" : "/home";
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       setError(
         err.response?.data?.message ||
