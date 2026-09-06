@@ -7,9 +7,10 @@ const MobileBottomNav = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: "/", icon: Home, label: "Home" },
+    { path: "/home", icon: Home, label: "Home" },
     { path: "/elections", icon: Vote, label: "Election" },
     { path: "/candidates", icon: Vote, label: "Candidates" },
+    { path: "/poll-history", icon: History, label: "History" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
 
