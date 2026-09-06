@@ -21,9 +21,12 @@ const PollHistory = () => {
         const res = await api.get("/elections");
         const allElections = res.data || [];
 
-        if (userData?.votedElections) {
+        if (userData?.votedElections && userData.votedElections.length > 0) {
+          // Use .some() with proper toString() comparison for ObjectId comparison
           const history = allElections.filter((e) =>
-            userData.votedElections.includes(e._id || e.id)
+            userData.votedElections.some(
+              (votedId) => votedId.toString() === (e._id || e.id).toString()
+            )
           );
           setVotingHistory(history);
         }
