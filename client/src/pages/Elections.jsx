@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Filter, Search, Vote, CalendarClock, CheckCircle2, AlertTriangle, Loader } from "lucide-react";
+import { Plus, Filter, Search, Vote, CalendarClock, CheckCircle2, AlertTriangle, Loader, Edit2, Trash2 } from "lucide-react";
 import api from "../store/axios.js";
 import { useAuth } from "../context/AuthContext";
 
@@ -43,14 +43,11 @@ const Elections = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case "LIVE":
-        return <span className="badge-live">● LIVE</span>;
+        return <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-800">● LIVE</span>;
       case "UPCOMING":
-        return <span className="badge-warning">Upcoming</span>;
-      case "COMPLETED":
-      case "ENDED":
-        return <span className="badge-success">Ended</span>;
+        return <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800">Upcoming</span>;
       default:
-        return <span className="badge-info">{status}</span>;
+        return <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-800">{status}</span>;
     }
   };
 
@@ -182,13 +179,22 @@ const Elections = () => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-amber-900/10">
-                <p className="text-xs text-amber-500 font-medium group-hover:text-amber-600 transition">
-                  {election.status === "LIVE"
-                    ? "Vote Now →"
-                    : election.status === "UPCOMING"
-                    ? "View Details →"
-                    : "View Results →"}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-amber-500 font-medium group-hover:text-amber-600 transition">
+                    {election.status === "LIVE"
+                      ? "Vote Now →"
+                      : election.status === "UPCOMING"
+                      ? "View Details →"
+                      : "View Results →"}
+                  </p>
+
+                  {user?.isAdmin && (
+                    <div className="flex gap-2">
+                       <button className="btn-secondary text-xs p-1.5"><Edit2 size={14} /></button>
+                       <button className="btn-secondary text-xs p-1.5 text-danger-strong"><Trash2 size={14} /></button>
+                    </div>
+                  )}
+                </div>
               </div>
             </button>
           ))}

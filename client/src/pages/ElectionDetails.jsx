@@ -10,6 +10,8 @@ import {
   Clock,
   Loader,
   Lock,
+  X,
+  Info,
 } from "lucide-react";
 import api from "../store/axios.js";
 import { useAuth } from "../context/AuthContext";
@@ -26,12 +28,14 @@ const ElectionDetails = () => {
   const [hasVoted, setHasVoted] = useState(false);
   const [votingCandidateId, setVotingCandidateId] = useState(null);
   const [showVoteConfirm, setShowVoteConfirm] = useState(null);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError("");
+        setHasVoted(false); // Reset hasVoted on mount/id change
 
         const [electionRes, candidatesRes] = await Promise.all([
           api.get(`/elections/${id}`),
@@ -42,9 +46,16 @@ const ElectionDetails = () => {
         setCandidates(candidatesRes.data || []);
 
         // Check if user has voted in this election
+        // Convert URL param id to string for comparison (votedElections contains ObjectId strings)
         const meRes = await api.get("/voters/me");
-        if (meRes.data?.votedElections?.includes(id)) {
+        const hasVotedInElection = meRes.data?.votedElections?.some(
+          (electionId) => electionId.toString() === id.toString()
+        );
+
+        if (hasVotedInElection) {
           setHasVoted(true);
+        } else {
+          setHasVoted(false);
         }
       } catch (err) {
         setError("Failed to load election details");
@@ -80,10 +91,8 @@ const ElectionDetails = () => {
 
       setHasVoted(true);
       setShowVoteConfirm(null);
-
-      // Refresh candidates to show updated vote counts
-      const res = await api.get(`/elections/${id}/candidates`);
-      setCandidates(res.data || []);
+      // Success modal or redirect? Prompt asks for success state.
+      // I'll stick to a clearer success banner and state.
     } catch (err) {
       alert(err.response?.data?.message || "Voting failed. Please try again.");
     } finally {
@@ -265,37 +274,49 @@ const ElectionDetails = () => {
                   </div>
                 </div>
 
-                {/* Vote Button */}
-                {election.status === "LIVE" && !hasVoted ? (
+                {/* Action Buttons */}
+                <div className="space-y-2">
+                  {/* View Candidate Button */}
                   <button
-                    onClick={() =>
-                      handleVote(candidate._id, candidate.fullName)
-                    }
-                    disabled={votingCandidateId === candidate._id}
-                    className="btn-primary w-full py-2 flex items-center justify-center gap-2"
+                    onClick={() => setSelectedCandidate(candidate)}
+                    className="btn-secondary w-full py-2 flex items-center justify-center gap-2 text-sm"
                   >
-                    {votingCandidateId === candidate._id ? (
-                      <>
-                        <Loader size={16} className="animate-spin" />
-                        Voting...
-                      </>
-                    ) : (
-                      <>
-                        <Vote size={16} />
-                        Vote
-                      </>
-                    )}
+                    <Info size={16} />
+                    View Candidate
                   </button>
-                ) : hasVoted ? (
-                  <button disabled className="btn-secondary w-full py-2 opacity-50">
-                    <Lock size={16} />
-                    Already Voted
-                  </button>
-                ) : (
-                  <button disabled className="btn-secondary w-full py-2 opacity-50">
-                    Voting Closed
-                  </button>
-                )}
+
+                  {/* Vote Button */}
+                  {election.status === "LIVE" && !hasVoted ? (
+                    <button
+                      onClick={() =>
+                        handleVote(candidate._id, candidate.fullName)
+                      }
+                      disabled={votingCandidateId === candidate._id}
+                      className="btn-primary w-full py-2 flex items-center justify-center gap-2"
+                    >
+                      {votingCandidateId === candidate._id ? (
+                        <>
+                          <Loader size={16} className="animate-spin" />
+                          Voting...
+                        </>
+                      ) : (
+                        <>
+                          <Vote size={16} />
+                          Vote
+                        </>
+                      )}
+                    </button>
+                  ) : hasVoted ? (
+                    <button disabled className="btn-secondary w-full py-2 opacity-50">
+                      <Lock size={16} />
+                      Already Voted
+                    </button>
+                  ) : (
+                    <button disabled className="btn-secondary w-full py-2 opacity-50">
+                      Voting Closed
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -306,6 +327,144 @@ const ElectionDetails = () => {
           </div>
         )}
       </div>
+
+      {/* Candidate Detail Modal */}
+      {selectedCandidate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 animate-slide-up">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedCandidate(null)}
+              className="absolute top-4 right-4 p-2 hover:bg-surface rounded-lg transition"
+            >
+              <X size={24} className="text-text-muted" />
+            </button>
+
+            {/* Candidate Header */}
+            <div className="flex gap-6 mb-6">
+              {/* Profile Photo */}
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-3xl">
+                  {selectedCandidate.fullName
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </div>
+              </div>
+
+              {/* Basic Info */}
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">{selectedCandidate.fullName}</h2>
+                <p className="text-lg text-amber-500 font-medium mb-4">{selectedCandidate.party}</p>
+                <div className="space-y-2">
+                  {selectedCandidate.symbol && (
+                    <p className="text-sm text-text-muted">
+                      <span className="font-medium">Symbol:</span> {selectedCandidate.symbol}
+                    </p>
+                  )}
+                  {selectedCandidate.age && (
+                    <p className="text-sm text-text-muted">
+                      <span className="font-medium">Age:</span> {selectedCandidate.age} years
+                    </p>
+                  )}
+                  {selectedCandidate.gender && (
+                    <p className="text-sm text-text-muted">
+                      <span className="font-medium">Gender:</span> {selectedCandidate.gender}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-surface-border my-6"></div>
+
+            {/* Detailed Information */}
+            <div className="space-y-4 mb-6">
+              {selectedCandidate.motto && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Motto</h3>
+                  <p className="text-text-soft">{selectedCandidate.motto}</p>
+                </div>
+              )}
+
+              {selectedCandidate.goodWorks && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Development Works</h3>
+                  <p className="text-text-soft">{selectedCandidate.goodWorks}</p>
+                </div>
+              )}
+
+              {selectedCandidate.experience && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Experience</h3>
+                  <p className="text-text-soft">{selectedCandidate.experience}</p>
+                </div>
+              )}
+
+              {selectedCandidate.address?.village && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Location</h3>
+                  <p className="text-text-soft">
+                    {selectedCandidate.address.village}
+                    {selectedCandidate.address.district && `, ${selectedCandidate.address.district}`}
+                    {selectedCandidate.address.state && `, ${selectedCandidate.address.state}`}
+                  </p>
+                </div>
+              )}
+
+              {selectedCandidate.mobileNumber && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Mobile</h3>
+                  <p className="text-text-soft">{selectedCandidate.mobileNumber}</p>
+                </div>
+              )}
+
+              {selectedCandidate.email && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Email</h3>
+                  <p className="text-text-soft">{selectedCandidate.email}</p>
+                </div>
+              )}
+
+              {selectedCandidate.fatherName && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Father's Name</h3>
+                  <p className="text-text-soft">{selectedCandidate.fatherName}</p>
+                </div>
+              )}
+
+              {selectedCandidate.motherName && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Mother's Name</h3>
+                  <p className="text-text-soft">{selectedCandidate.motherName}</p>
+                </div>
+              )}
+
+              {selectedCandidate.spouseName && (
+                <div>
+                  <h3 className="font-semibold text-text mb-2">Spouse's Name</h3>
+                  <p className="text-text-soft">{selectedCandidate.spouseName}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Vote Stats */}
+            <div className="bg-surface rounded-lg p-4 mb-6">
+              <p className="text-sm text-text-muted mb-2">Total Votes Received</p>
+              <p className="text-2xl font-bold text-amber-500">{selectedCandidate.voteCount || 0}</p>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedCandidate(null)}
+              className="btn-secondary w-full"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Vote Confirmation Modal */}
       {showVoteConfirm && (
