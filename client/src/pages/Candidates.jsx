@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Award } from "lucide-react";
+import { Award, AlertTriangle } from "lucide-react";
 import api from "../store/axios";
 import CandidateFormModal from "../components/Candidate/CandidateFormModal";
 import { toast } from "react-toastify";
@@ -12,15 +12,28 @@ const Candidates = () => {
   const [editingCandidate, setEditingCandidate] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [candidateToDelete, setCandidateToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/candidates").then((res) => setCandidates(res.data));
-    api
-      .get("/voters/me")
-      .then((res) => setUser(res.data))
-      .catch(() => {});
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [candidatesRes, userRes] = await Promise.all([
+          api.get("/candidates"),
+          api.get("/voters/me").catch(() => ({ data: null })),
+        ]);
+        setCandidates(candidatesRes.data || []);
+        setUser(userRes.data);
+      } catch (err) {
+        toast.error("Failed to load candidates");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleVote = (id) => {
@@ -55,96 +68,114 @@ const Candidates = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* HEADER */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Candidates
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Select your candidate and make your vote count.
-              </p>
-            </div>
-
-            {user?.isAdmin && (
-              <button
-                onClick={() => setShowModal(true)}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700"
-              >
-                Add Candidate
-              </button>
-            )}
-          </div>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Candidates</h1>
+          <p className="mt-1 text-text-muted">Select your candidate and make your vote count</p>
         </div>
 
-        {/* CANDIDATES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {user?.isAdmin && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn-primary flex items-center gap-2 w-fit"
+          >
+            <span>+</span>
+            Add Candidate
+          </button>
+        )}
+      </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="card p-12 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto"></div>
+          <p className="text-text-muted mt-4">Loading candidates...</p>
+        </div>
+      )}
+
+      {/* Candidates Grid */}
+      {!loading && candidates.length > 0 && (
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {candidates.map((c) => (
             <div
               key={c._id}
-              className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition"
+              className="card p-4 sm:p-5 flex flex-col hover:shadow-lg transition-all duration-300"
             >
-              <div className="flex flex-row sm:flex-col gap-4">
-                {/* IMAGE */}
-                <img
-                  src={c.image}
-                  alt={c.fullName}
-                  className="w-24 h-24 sm:w-full sm:h-48 object-cover rounded-xl"
-                />
+              {/* IMAGE CONTAINER */}
+              <div className="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-amber-400 to-amber-600 flex-shrink-0 h-32 sm:h-40 flex items-center justify-center">
+                {c.image && c.image.trim() ? (
+                  <img
+                    src={c.image}
+                    alt={c.fullName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <span className="text-white font-bold text-2xl sm:text-3xl">
+                    {c.fullName
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)}
+                  </span>
+                )}
+              </div>
 
-                {/* INFO */}
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {c.fullName}
-                  </h3>
+              {/* INFO */}
+              <div className="flex-1">
+                <h3 className="text-base sm:text-lg font-semibold line-clamp-2">
+                  {c.fullName}
+                </h3>
 
-                  <div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
-                    <Award className="w-4 h-4 text-indigo-600" />
-                    {c.party}
-                  </div>
-
-                  <p className="text-sm text-gray-500 mt-1">
-                    Age {c.age || 40}
-                  </p>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-text-muted mt-1.5">
+                  <Award size={14} className="text-amber-500 flex-shrink-0" />
+                  <span className="truncate">{c.party}</span>
                 </div>
+
+                {c.age && (
+                  <p className="text-xs sm:text-sm text-text-muted mt-1.5">
+                    Age {c.age}
+                  </p>
+                )}
               </div>
 
               {/* BUTTONS */}
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={() => navigate(`/candidates/${c._id}`)}
-                  className="flex-1 border-2 border-indigo-600 text-indigo-600 py-2 rounded-lg font-medium hover:bg-indigo-50"
+                  className="btn-secondary flex-1 py-2 text-xs sm:text-sm"
                 >
                   View Profile
                 </button>
 
                 <button
                   onClick={() => handleVote(c._id)}
-                  className="flex-1 bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700"
+                  className="btn-primary flex-1 py-2 text-xs sm:text-sm"
                 >
                   Vote
                 </button>
               </div>
 
-              {/* ADMIN */}
+              {/* ADMIN BUTTONS */}
               {user?.isAdmin && (
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-amber-900/10">
                   <button
                     onClick={() => {
                       setEditingCandidate(c);
                       setShowModal(true);
                     }}
-                    className="flex-1 bg-yellow-500 text-white py-1.5 rounded"
+                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm py-1.5 rounded-md font-medium transition-colors"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => handleDelete(c._id)}
-                    className="flex-1 bg-red-600 text-white py-1.5 rounded"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm py-1.5 rounded-md font-medium transition-colors"
                   >
                     Delete
                   </button>
@@ -153,70 +184,83 @@ const Candidates = () => {
             </div>
           ))}
         </div>
+      )}
 
-        {/* ADD / EDIT MODAL */}
-        {showModal && (
-          <CandidateFormModal
-            candidate={editingCandidate}
-            onClose={() => {
-              setShowModal(false);
-              setEditingCandidate(null);
-            }}
-            onSuccess={(newCandidate) => {
-              if (editingCandidate) {
-                setCandidates((prev) =>
-                  prev.map((c) =>
-                    c._id === newCandidate._id ? newCandidate : c,
-                  ),
-                );
-                toast.success("Candidate updated successfully!");
-              } else {
-                setCandidates((prev) => [newCandidate, ...prev]);
-                toast.success("Candidate added successfully!");
-              }
-            }}
-          />
-        )}
+      {/* Empty State */}
+      {!loading && candidates.length === 0 && (
+        <div className="card p-12 text-center">
+          <Award size={40} className="mx-auto text-text-muted mb-4 opacity-50" />
+          <h3 className="text-lg font-semibold">No candidates yet</h3>
+          <p className="mt-2 text-text-muted">
+            Check back later or add candidates if you're an admin
+          </p>
+        </div>
+      )}
 
-        {/* DELETE CONFIRMATION (FIXED) */}
-        {showDeleteConfirm && candidateToDelete && (
-          <>
-            {/* Background */}
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"></div>
+      {/* ADD / EDIT MODAL */}
+      {showModal && (
+        <CandidateFormModal
+          candidate={editingCandidate}
+          onClose={() => {
+            setShowModal(false);
+            setEditingCandidate(null);
+          }}
+          onSuccess={(newCandidate) => {
+            if (editingCandidate) {
+              setCandidates((prev) =>
+                prev.map((c) =>
+                  c._id === newCandidate._id ? newCandidate : c,
+                ),
+              );
+              toast.success("Candidate updated successfully!");
+            } else {
+              setCandidates((prev) => [newCandidate, ...prev]);
+              toast.success("Candidate added successfully!");
+            }
+            setEditingCandidate(null);
+          }}
+        />
+      )}
 
-            {/* Card */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-              <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Delete Candidate
-                </h3>
+      {/* DELETE CONFIRMATION MODAL */}
+      {showDeleteConfirm && candidateToDelete && (
+        <>
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"></div>
 
-                <p className="text-gray-600 mb-6">
-                  Are you sure you want to delete{" "}
-                  <strong>{candidateToDelete.fullName}</strong>? This action
-                  cannot be undone.
-                </p>
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="card w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-lg">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+                <AlertTriangle size={20} className="text-red-500" />
+                Delete Candidate
+              </h3>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={cancelDelete}
-                    className="flex-1 border-2 border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50"
-                  >
-                    No
-                  </button>
+              <p className="text-text-muted mb-6">
+                Are you sure you want to delete{" "}
+                <strong>{candidateToDelete.fullName}</strong>? This action
+                cannot be undone.
+              </p>
 
-                  <button
-                    onClick={confirmDelete}
-                    className="flex-1 bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700"
-                  >
-                    Yes
-                  </button>
-                </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDelete}
+                  className="btn-secondary flex-1 py-2"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium transition-colors"
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
