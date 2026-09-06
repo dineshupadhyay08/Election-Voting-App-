@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Vote, AlertCircle, CheckCircle2, Loader } from "lucide-react";
 import api from "../store/axios";
 import ThemeToggle from "../components/ThemeToggle";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate(user.isAdmin ? "/admin/dashboard" : "/home", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [formData, setFormData] = useState({
     fullName: "",
