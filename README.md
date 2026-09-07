@@ -29,7 +29,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 - Live / Upcoming election handling
 - Election status & dates
 
---- me know when 
+--- me know w
 
 ### 🧑‍💼 Candidates
 - Add candidates under a specific election (Admin)
