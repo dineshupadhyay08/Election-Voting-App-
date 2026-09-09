@@ -29,7 +29,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 - Live / Upcoming election handling
 - Election status & dates
 
----  hshshshshjssjxj
+---  hshshshshj
 
 ### 🧑‍💼 Candidates
 - Add candidates under a specific election (Admin)
