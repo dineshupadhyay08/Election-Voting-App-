@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import AshokaChakra from "./AshokaChakra";
 
 const FloatingNavbar = () => {
   const navigate = useNavigate();
@@ -121,6 +122,10 @@ const FloatingNavbar = () => {
                     location.pathname === item.to ||
                     location.pathname.startsWith(item.to.split("?")[0]);
 
+                  // Use Ashoka Chakra for Elections, regular icons for others
+                  const isElections = item.to === "/elections";
+                  const displayIcon = isElections ? <AshokaChakra size={20} strokeWidth={1.5} /> : <Icon size={18} strokeWidth={2} />;
+
                   return (
                     <NavLink
                       key={item.to}
@@ -131,7 +136,7 @@ const FloatingNavbar = () => {
                           : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)]"
                       }`}
                     >
-                      <Icon size={18} strokeWidth={2} />
+                      {displayIcon}
                       <span>{item.label}</span>
                     </NavLink>
                   );
