@@ -11,6 +11,7 @@ const {
   getVoterController,
   getMyProfileController,
   updateVoterController,
+  getAllVotersController,
 } = require("../controller/voterController");
 const { getDashboardOverview } = require("../controller/dashboardController");
 
@@ -55,6 +56,7 @@ router.post("/voters/logout", logoutVoterController);
 router.get("/voters/me", authMiddleware, getMyProfileController);
 router.put("/voters/update", authMiddleware, updateVoterController);
 router.get("/voters/:id", authMiddleware, getVoterController);
+router.get("/voters", authMiddleware, adminMiddleware, getAllVotersController);
 router.get("/dashboard/overview", authMiddleware, getDashboardOverview);
 
 /* ======================================================
@@ -135,11 +137,11 @@ router.patch("/candidates/:id/vote", authMiddleware, voteCandidates);
 router.get("/parties", authMiddleware, getParties);
 
 /* ================================
-   UPLOAD ROUTE
+   UPLOAD ROUTE (SECURE)
 ================================ */
 const cloudinary = require("../utils/cloudinary");
 
-router.post("/upload", async (req, res) => {
+router.post("/upload", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     if (!req.files || !req.files.file) {
       return res.status(400).json({ message: "No file uploaded" });
