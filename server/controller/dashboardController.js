@@ -2,22 +2,7 @@ const Candidate = require("../model/candidatesModel");
 const Election = require("../model/electionModel");
 const Voter = require("../model/voterModel");
 const HttpError = require("../middleware/HttpError");
-
-const getElectionStatus = (election) => {
-  const now = new Date();
-  const startDate = new Date(election.startDate);
-  const endDate = new Date(election.endDate);
-
-  if (now < startDate) {
-    return "UPCOMING";
-  }
-
-  if (now > endDate) {
-    return "COMPLETED";
-  }
-
-  return "LIVE";
-};
+const { getElectionStatus } = require("../utils/electionLifecycle");
 
 const getTimeDistance = (targetDate) => {
   const diff = new Date(targetDate).getTime() - Date.now();
