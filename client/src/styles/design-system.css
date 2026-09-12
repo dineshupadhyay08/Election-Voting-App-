@@ -85,6 +85,17 @@
   --brand-primary: #f59e0b;
   --brand-primary-light: #fbbf24;
 
+  /* Navbar and UI tokens */
+  --text-primary: #13131b;
+  --text-secondary: #6b6b78;
+  --accent-soft: #fef3c7;
+  --accent-strong: #d97706;
+  --border-soft: rgba(15, 15, 27, 0.08);
+  --surface-2: rgba(255, 255, 255, 0.5);
+  --danger-text: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.1);
+  --brand-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+
   /* Chart colors */
   --chart-grid: rgba(15, 15, 27, 0.08);
   --chart-tick: #6b6b78;
@@ -146,6 +157,17 @@ html.dark {
   /* Brand primary colors */
   --brand-primary: #fbbf24;
   --brand-primary-light: #fcd34d;
+
+  /* Navbar and UI tokens */
+  --text-primary: #ebebf5;
+  --text-secondary: #8a8aa0;
+  --accent-soft: rgba(245, 158, 11, 0.2);
+  --accent-strong: #fbbf24;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --danger-text: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.15);
+  --brand-gradient: linear-gradient(135deg, #fbbf24, #d97706);
 
   /* Chart colors */
   --chart-grid: rgba(255, 255, 255, 0.08);
