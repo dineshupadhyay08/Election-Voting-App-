@@ -67,18 +67,6 @@ const electionSchema = new Schema(
 );
 
 /* ================= AUTO STATUS HANDLER ================= */
-electionSchema.pre("save", function (next) {
-  const now = new Date();
-
-  if (now < this.startDate) {
-    this.status = "UPCOMING";
-  } else if (now >= this.startDate && now <= this.endDate) {
-    this.status = "LIVE";
-  } else {
-    this.status = "COMPLETED";
-  }
-
-  next();
-});
+// Status is now calculated dynamically in the business logic layer using electionLifecycle.js.
 
 module.exports = model("Election", electionSchema);
