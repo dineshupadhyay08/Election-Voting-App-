@@ -1,6 +1,8 @@
 const Candidate = require("../model/candidatesModel.js");
 const Election = require("../model/electionModel.js");
 const HttpError = require("../middleware/HttpError.js");
+const Vote = require("../model/voteModel.js");
+const { isVotingAllowed } = require("../utils/electionLifecycle.js");
 
 /* ================================
    ADD CANDIDATE (ADMIN)
@@ -225,61 +227,77 @@ const getParties = async (req, res, next) => {
   }
 };
 
-/* ================================
-   VOTE CANDIDATE (USER)
-================================ */
+const mongoose = require("mongoose");
+// ... existing imports
+
 const voteCandidates = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const candidate = await Candidate.findById(req.params.id).populate(
-      "election",
-    );
+    const candidate = await Candidate.findById(req.params.id)
+      .populate("election")
+      .session(session);
     if (!candidate) {
+      await session.abortTransaction();
       return next(new HttpError("Candidate not found", 404));
     }
 
     const election = candidate.election;
     if (!election) {
-      return next(new HttpError("Election not found for this candidate", 404));
+      await session.abortTransaction();
+      return next(new HttpError("Election not found", 404));
     }
 
-    if (election.status !== "LIVE") {
+    if (!isVotingAllowed(election)) {
+      await session.abortTransaction();
       return next(
-        new HttpError("Voting is only allowed for LIVE elections", 403),
+        new HttpError("Voting is not allowed for this election", 403),
       );
     }
 
-    // Check if user has already voted in this election
-    const Voter = require("../model/voterModel");
-    const voter = await Voter.findById(req.user.id);
-    if (!voter) {
-      return next(new HttpError("Voter not found", 404));
+    // Check for existing vote
+    const existingVote = await Vote.findOne({
+      voter: req.user.id,
+      election: election._id,
+    }).session(session);
+
+    if (existingVote) {
+      await session.abortTransaction();
+      return next(new HttpError("You have already voted in this election", 409));
     }
 
-    if (voter.votedElections.includes(election._id)) {
-      return next(
-        new HttpError("You have already voted in this election", 403),
-      );
-    }
-
-    // Record the vote
-    candidate.voteCount += 1;
-    await candidate.save();
-
-    // Add voter to election's voters array
-    election.voters.push(voter._id);
-    await election.save();
-
-    // Add election to voter's votedElections
-    voter.votedElections.push(election._id);
-    await voter.save();
-
-    res.json({
-      message: "Vote recorded successfully",
-      votes: candidate.voteCount,
+    const vote = new Vote({
+      voter: req.user.id,
+      election: election._id,
+      candidate: candidate._id,
     });
+    await vote.save({ session });
+
+    candidate.voteCount += 1;
+    await candidate.save({ session });
+
+    election.voters.push(req.user.id);
+    await election.save({ session });
+
+    const Voter = require("../model/voterModel");
+    const voter = await Voter.findById(req.user.id).session(session);
+    voter.votedElections.push(election._id);
+    await voter.save({ session });
+
+    await session.commitTransaction();
+    res
+      .status(201)
+      .json({ message: "Vote recorded successfully", votes: candidate.voteCount });
   } catch (error) {
+    await session.abortTransaction();
+    if (error.code === 11000) {
+      return next(new HttpError("You have already voted in this election", 409));
+    }
     console.error("VOTING ERROR:", error);
     next(new HttpError("Voting failed", 500));
+  } finally {
+    session.endSession();
   }
 };
 
