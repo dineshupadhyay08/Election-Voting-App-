@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const VoterModel = require("../model/voterModel.js");
+// const VoteModel = require("../model/voteModel.js");
 const HttpError = require("../middleware/HttpError.js");
 
 //*******REGISTER NEW VOTER********* */
@@ -194,6 +195,36 @@ const updateVoterController = async (req, res, next) => {
   }
 };
 
+const VoteModel = require("../model/voteModel.js");
+
+// ... existing controllers ...
+
+//******* GET ALL VOTERS WITH VOTES********* */
+
+const getAllVotersController = async (req, res, next) => {
+  try {
+    const voters = await VoterModel.find({ isAdmin: false }).select("-password").lean();
+    const votes = await VoteModel.find({}).populate("election").populate("candidate").lean();
+
+    const votersWithVotes = voters.map(voter => {
+      const voterVotes = votes.filter(vote => vote.voter.toString() === voter._id.toString());
+      return {
+        ...voter,
+        voted: voterVotes.length > 0,
+        votingActivity: voterVotes.map(vote => ({
+          election: vote.election ? vote.election.title : "Unknown",
+          candidate: vote.candidate ? vote.candidate.fullName : "Unknown"
+        }))
+      };
+    });
+
+    res.status(200).json(votersWithVotes);
+  } catch (error) {
+    console.error("GET ALL VOTERS ERROR:", error);
+    return next(new HttpError("Couldn't fetch voters", 500));
+  }
+};
+
 // ✅ Export all controllers
 module.exports = {
   registerVoterController,
@@ -202,4 +233,5 @@ module.exports = {
   getVoterController,
   getMyProfileController,
   updateVoterController,
+  getAllVotersController,
 };
