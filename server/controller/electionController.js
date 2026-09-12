@@ -1,6 +1,7 @@
 const Election = require("../model/electionModel");
 const HttpError = require("../middleware/HttpError");
 const Candidate = require("../model/candidatesModel");
+const { getElectionStatus } = require("../utils/electionLifecycle");
 
 /* ================================
    ADD NEW ELECTION (ADMIN)
@@ -40,6 +41,10 @@ const addElection = async (req, res, next) => {
       candidates: [...new Set(candidates)],
     });
 
+    // Update status dynamically
+    election.status = getElectionStatus(election);
+    await election.save();
+
     // 🔥 MAIN FIX: link candidates → election
     if (candidates.length > 0) {
       await Candidate.updateMany(
@@ -63,7 +68,7 @@ const getElectionVoters = async (req, res, next) => {
   try {
     const { category, status, sort } = req.query;
 
-    const query = { isActive: true };
+    const query = req.user?.isAdmin ? {} : { isActive: true };
 
     if (category) {
       query.category = category;
@@ -138,6 +143,9 @@ const updateElection = async (req, res, next) => {
     if (endDate !== undefined) election.endDate = endDate;
     if (isActive !== undefined) election.isActive = isActive;
 
+    // Update status dynamically
+    election.status = getElectionStatus(election);
+
     if (candidates !== undefined) {
       election.candidates = [...new Set(candidates)];
 
@@ -167,11 +175,22 @@ const updateElection = async (req, res, next) => {
 ================================ */
 const removeElection = async (req, res, next) => {
   try {
-    const election = await Election.findByIdAndDelete(req.params.id);
+    const election = await Election.findById(req.params.id);
 
     if (!election) {
       return next(new HttpError("Election not found", 404));
     }
+
+    if (election.voters && election.voters.length > 0) {
+      return next(
+        new HttpError(
+          "Cannot delete election with votes cast. Deactivate instead.",
+          403,
+        ),
+      );
+    }
+
+    await election.deleteOne();
 
     res.json({ message: "Election deleted successfully" });
   } catch (error) {
