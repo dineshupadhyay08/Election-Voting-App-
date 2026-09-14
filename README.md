@@ -183,7 +183,7 @@ PATCH	/candidates/:id		---(Vote for a candidate)
     
 -   Notification system
 
----  kajdfjad
+---  kajdf
 
 
 ## 👨‍💻 Author
