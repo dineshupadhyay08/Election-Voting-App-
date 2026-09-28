@@ -112,19 +112,21 @@ const seedData = async () => {
         const voterCount = await VoterModel.countDocuments();
         const voteCount = await mongoose.connection.collection("votes").countDocuments({});
 
-        // console.log("\n========================================");
-        // console.log("ELECTOR TEST DATA SEEDED SUCCESSFULLY");
-        // console.log("========================================");
-        // console.log(`Elections:     ${electionCount}`);
-        // console.log(`Candidates:    ${candidateCount}`);
-        // console.log(`Test Voters:   ${voterCount}`);
-        // console.log(`Votes Created: ${voteCount}`);
+        console.log("\n========================================");
+        console.log("ELECTOR TEST DATA SEEDED SUCCESSFULLY");
+        console.log("========================================");
+        console.log(`Elections:     ${electionCount}`);
+        console.log(`Candidates:    ${candidateCount}`);
+        console.log(`Test Voters:   ${voterCount}`);
+        console.log(`Votes Created: ${voteCount}`);
         console.log("========================================");
         console.log("\nTest Voter Credentials:");
         console.log("Password: Test@12345");
         console.log("\nEmails:");
         voters.forEach((v, i) => console.log(`  ${i + 1}. ${v.email}`));
         console.log("========================================");
+        
+        aksjdfl;kj
 
         await mongoose.disconnect();
         process.exit(0);
