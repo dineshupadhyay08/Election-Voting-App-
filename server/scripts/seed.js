@@ -125,8 +125,7 @@ const seedData = async () => {
         console.log("\nEmails:");
         voters.forEach((v, i) => console.log(`  ${i + 1}. ${v.email}`));
         console.log("========================================");
-        
-        aksjdfl;kj
+
 
         await mongoose.disconnect();
         process.exit(0);
