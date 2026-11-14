@@ -37,7 +37,7 @@ The project focuses on **role-based access (Admin / Voter)**, **secure authentic
 - Candidate profile with personal & political details
 - Vote for a candidate (One vote per election)
 
---- me know if you
+--- me know if
 
 ### 👤 Voter Profile
 - View logged-in voter profile
